@@ -24,6 +24,7 @@ type ProviderCardProps = {
     configs: Array<{
       role: string;
       modelName: string;
+      temperature: number;
     }>;
   };
 };
@@ -145,6 +146,9 @@ export function ProviderCard({ provider }: ProviderCardProps) {
               <div className="mt-1 text-xs text-muted-foreground">
                 {config?.modelName ?? provider.defaultModelName}
               </div>
+              <div className="mt-1 text-xs text-muted-foreground">
+                温度：{((config?.temperature ?? provider.defaultTemperature) / 100).toFixed(1)}
+              </div>
             </div>
           );
         })}
@@ -196,6 +200,37 @@ function ProviderEditForm({ provider }: ProviderCardProps) {
           </span>
         </span>
       </label>
+      <div className="mt-5">
+        <div className="text-sm font-semibold">角色模型配置</div>
+        <p className="mt-1 text-xs leading-5 text-muted-foreground">
+          可以为不同 AI 角色设置不同模型或温度。留用默认模型时保持与提供商默认模型一致。
+        </p>
+        <div className="mt-3 grid gap-3 md:grid-cols-2">
+          {aiRoles.map((role) => {
+            const config = provider.configs.find((item) => item.role === role.value);
+
+            return (
+              <div key={role.value} className="rounded-lg border border-border bg-background p-3">
+                <div className="text-sm font-semibold">{role.label}</div>
+                <div className="mt-3 grid gap-3">
+                  <EditField
+                    label="模型名称"
+                    name={`roleModelName.${role.value}`}
+                    defaultValue={config?.modelName ?? provider.defaultModelName}
+                  />
+                  <EditField
+                    label="温度"
+                    name={`roleTemperature.${role.value}`}
+                    defaultValue={String((config?.temperature ?? provider.defaultTemperature) / 100)}
+                    type="number"
+                    step="0.1"
+                  />
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
       <div className="mt-4">
         <PendingButton
           className="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition hover:opacity-90 disabled:opacity-50"
