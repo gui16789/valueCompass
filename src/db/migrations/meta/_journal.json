@@ -15,6 +15,13 @@
       "when": 1777685517520,
       "tag": "0001_milky_tenebrous",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1777699350416,
+      "tag": "0002_rare_raider",
+      "breakpoints": true
     }
   ]
 }

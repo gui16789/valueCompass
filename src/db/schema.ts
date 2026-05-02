@@ -31,6 +31,29 @@ export const modelConfigs = sqliteTable("model_configs", {
   updatedAt: text("updated_at").notNull()
 });
 
+export const aiConversations = sqliteTable("ai_conversations", {
+  id: text("id").primaryKey(),
+  title: text("title").notNull(),
+  role: text("role").notNull(),
+  providerId: text("provider_id")
+    .notNull()
+    .references(() => modelProviders.id, { onDelete: "cascade" }),
+  createdAt: text("created_at").notNull(),
+  updatedAt: text("updated_at").notNull()
+});
+
+export const aiMessages = sqliteTable("ai_messages", {
+  id: text("id").primaryKey(),
+  conversationId: text("conversation_id")
+    .notNull()
+    .references(() => aiConversations.id, { onDelete: "cascade" }),
+  role: text("role").notNull(),
+  content: text("content").notNull(),
+  modelName: text("model_name").notNull().default(""),
+  temperature: integer("temperature").notNull().default(20),
+  createdAt: text("created_at").notNull()
+});
+
 export const knowledgeNodes = sqliteTable("knowledge_nodes", {
   id: text("id").primaryKey(),
   type: text("type").notNull(),
