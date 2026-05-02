@@ -128,3 +128,21 @@ export const decisions = sqliteTable("decisions", {
   createdAt: text("created_at").notNull(),
   updatedAt: text("updated_at").notNull()
 });
+
+export const valuations = sqliteTable("valuations", {
+  id: text("id").primaryKey(),
+  companyId: text("company_id").references(() => companies.id, { onDelete: "set null" }),
+  templateType: text("template_type").notNull(),
+  title: text("title").notNull(),
+  valuationDate: text("valuation_date").notNull(),
+  currentPrice: integer("current_price").notNull().default(0),
+  sharesOutstanding: integer("shares_outstanding").notNull().default(0),
+  currency: text("currency").notNull().default("CNY"),
+  scenarioBearJson: text("scenario_bear_json").notNull().default("{}"),
+  scenarioBaseJson: text("scenario_base_json").notNull().default("{}"),
+  scenarioBullJson: text("scenario_bull_json").notNull().default("{}"),
+  resultJson: text("result_json").notNull().default("{}"),
+  userNotes: text("user_notes").notNull().default(""),
+  createdAt: text("created_at").notNull(),
+  updatedAt: text("updated_at").notNull()
+});
