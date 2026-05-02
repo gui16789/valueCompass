@@ -1,4 +1,4 @@
-import { AlertCircle, Bot, CheckCircle2, KeyRound } from "lucide-react";
+import { AlertCircle, Bot, CheckCircle2, Download, KeyRound } from "lucide-react";
 import {
   saveModelProvider,
 } from "./actions";
@@ -121,6 +121,25 @@ export default async function SettingsPage({ searchParams }: SettingsPageProps) 
             ))
           )}
         </div>
+      </section>
+
+      <section className="rounded-lg border border-border bg-card p-6">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+          <SectionHeader
+            title="本地数据备份"
+            description="导出观察池、估值、原则、检查、决策、复盘和 AI 对话记录。导出文件不包含模型 API Key。"
+          />
+          <a
+            href="/api/export"
+            className="inline-flex items-center gap-2 rounded-md border border-border bg-background px-4 py-2 text-sm font-semibold transition hover:bg-muted"
+          >
+            <Download className="h-4 w-4" aria-hidden />
+            导出 JSON
+          </a>
+        </div>
+        <p className="mt-3 text-xs leading-5 text-muted-foreground">
+          导出文件可能包含你的研究记录和决策复盘，请保存在你信任的位置。导入恢复功能放在后续版本。
+        </p>
       </section>
     </main>
   );
