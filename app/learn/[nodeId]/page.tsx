@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, Bot, CheckCircle2 } from "lucide-react";
+import { CoreIdeaPanel } from "@/components/learning/core-idea-panel";
 import {
   getKnowledgeNode,
   getRelatedNodes,
@@ -66,7 +67,7 @@ export default async function NodeDetailPage({ params }: NodeDetailPageProps) {
 
       <section className="grid gap-6 xl:grid-cols-[1fr_340px]">
         <div className="space-y-6">
-          <InfoPanel title="核心观点" items={node.coreIdeas} />
+          <CoreIdeaPanel node={node} />
           <InfoPanel title="A 股适配" items={node.aShareNotes} />
           <InfoPanel title="常见误解" items={node.misunderstandings} />
           <InfoPanel title="实践动作" items={node.practiceActions} />
