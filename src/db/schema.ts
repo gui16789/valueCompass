@@ -73,6 +73,12 @@ export const companies = sqliteTable("companies", {
   exchange: text("exchange").notNull(),
   industry: text("industry").notNull().default(""),
   companyType: text("company_type").notNull().default("other"),
+  watchStatus: text("watch_status").notNull().default("watching"),
+  valuationStatus: text("valuation_status").notNull().default("not_started"),
+  inCircle: integer("in_circle", { mode: "boolean" }).notNull().default(false),
+  thesis: text("thesis").notNull().default(""),
+  keyRisks: text("key_risks").notNull().default(""),
+  nextAction: text("next_action").notNull().default(""),
   description: text("description").notNull().default(""),
   createdAt: text("created_at").notNull(),
   updatedAt: text("updated_at").notNull()
