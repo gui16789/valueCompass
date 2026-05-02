@@ -55,6 +55,8 @@ export default async function ValuationsPage({ searchParams }: ValuationsPagePro
         <StatusBanner status={params.status === "success" ? "success" : "error"} message={params.message} />
       ) : null}
 
+      <TemplateSelectionGuide />
+
       <section className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
         <section className="rounded-lg border border-border bg-card p-6">
           <div className="flex items-center gap-2">
@@ -116,8 +118,8 @@ function ValuationForm({
           </label>
           <Field label="估值标题" name="title" defaultValue={`${template.label}估值`} />
           <Field label="估值日期" name="valuationDate" type="date" defaultValue={new Date().toISOString().slice(0, 10)} />
-          <Field label="当前价格（元/股）" name="currentPrice" type="number" step="0.01" />
-          <Field label="总股本（亿股）" name="sharesOutstanding" type="number" step="0.0001" />
+          <Field label="当前价格（元/股）" name="currentPrice" type="number" step="0.01" placeholder="例如：72.50" />
+          <Field label="总股本（亿股）" name="sharesOutstanding" type="number" step="0.0001" placeholder="例如：76.63" />
         </div>
 
         <div className="grid gap-4">
@@ -142,6 +144,32 @@ function ValuationForm({
         </PendingButton>
       </form>
     </details>
+  );
+}
+
+function TemplateSelectionGuide() {
+  return (
+    <section className="space-y-4">
+      <SectionHeader
+        title="模板选择指南"
+        description="先判断公司靠什么创造价值，再选主模板；复杂公司可以用第二个模板交叉验证。这里帮助你选工具，不给买卖结论。"
+      />
+      <div className="grid gap-4 lg:grid-cols-4">
+        {valuationTemplates.map((template) => (
+          <article key={template.value} className="rounded-lg border border-border bg-card p-4">
+            <div className="text-sm font-semibold">{template.label}</div>
+            <p className="mt-1 text-xs text-primary">{template.method}</p>
+            <InfoLine title="适合" value={template.fitFor} />
+            <InfoLine title="慎用" value={template.avoidFor} />
+            <InfoLine title="例子" value={template.examples} />
+          </article>
+        ))}
+      </div>
+      <div className="rounded-lg border border-border bg-card p-4 text-sm leading-6">
+        <span className="font-semibold">美的集团这类成熟消费制造公司：</span>
+        优先用制造业模板看自由现金流、资本开支和营运资本，再用消费股模板用利润增长和 PE 做交叉验证。
+      </div>
+    </section>
   );
 }
 
@@ -241,6 +269,15 @@ function RecentValuations({
         )}
       </div>
     </section>
+  );
+}
+
+function InfoLine({ title, value }: { title: string; value: string }) {
+  return (
+    <p className="mt-3 text-sm leading-6 text-muted-foreground">
+      <span className="font-semibold text-foreground">{title}：</span>
+      {value}
+    </p>
   );
 }
 
