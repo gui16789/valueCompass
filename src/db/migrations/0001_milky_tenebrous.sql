@@ -1,0 +1,1 @@
+ALTER TABLE `model_providers` ADD `allow_insecure_tls` integer DEFAULT false NOT NULL;
