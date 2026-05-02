@@ -2,6 +2,7 @@ import Link from "next/link";
 import { AlertCircle, Bot, Calculator, CheckCircle2, ShieldAlert, Sigma } from "lucide-react";
 import { PendingButton } from "@/components/ui/pending-button";
 import { SectionHeader } from "@/components/ui/section-header";
+import { SensitivityChartLazy } from "@/components/valuations/sensitivity-chart-lazy";
 import type { companies, valuations } from "@/db/schema";
 import type { ValuationResult, ValuationScenarioInput } from "@/lib/valuations/calculations";
 import {
@@ -272,6 +273,14 @@ function ValuationCard({ valuation, company }: { valuation: Valuation; company: 
         <InfoBlock title="中性情景" value={`${formatNumber(result.baseValuePerShare)} 元/股`} />
         <InfoBlock title="安全边际" value={formatPercent(result.baseMarginOfSafety)} />
       </div>
+
+      <SensitivityChartLazy
+        currentPrice={currentPrice}
+        data={result.scenarioResults.map((scenario) => ({
+          name: labelFor(scenarios, scenario.name),
+          valuePerShare: scenario.valuePerShare
+        }))}
+      />
 
       {result.riskFlags.length > 0 ? (
         <div className="mt-4 rounded-md border border-border bg-card p-3">
