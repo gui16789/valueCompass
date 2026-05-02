@@ -83,3 +83,48 @@ export const companies = sqliteTable("companies", {
   createdAt: text("created_at").notNull(),
   updatedAt: text("updated_at").notNull()
 });
+
+export const investmentPrinciples = sqliteTable("investment_principles", {
+  id: text("id").primaryKey(),
+  title: text("title").notNull().default("我的 A 股价值投资原则"),
+  circleOfCompetence: text("circle_of_competence").notNull().default(""),
+  excludedIndustries: text("excluded_industries").notNull().default(""),
+  minimumFinancialQuality: text("minimum_financial_quality").notNull().default(""),
+  minimumMarginOfSafety: text("minimum_margin_of_safety").notNull().default(""),
+  positionRules: text("position_rules").notNull().default(""),
+  buyRules: text("buy_rules").notNull().default(""),
+  sellRules: text("sell_rules").notNull().default(""),
+  doNothingRules: text("do_nothing_rules").notNull().default(""),
+  riskRules: text("risk_rules").notNull().default(""),
+  version: integer("version").notNull().default(1),
+  active: integer("active", { mode: "boolean" }).notNull().default(true),
+  createdAt: text("created_at").notNull(),
+  updatedAt: text("updated_at").notNull()
+});
+
+export const checklistRuns = sqliteTable("checklist_runs", {
+  id: text("id").primaryKey(),
+  checklistType: text("checklist_type").notNull(),
+  companyId: text("company_id").references(() => companies.id, { onDelete: "set null" }),
+  principleId: text("principle_id").references(() => investmentPrinciples.id, { onDelete: "set null" }),
+  itemsJson: text("items_json").notNull().default("[]"),
+  summary: text("summary").notNull().default(""),
+  finalJudgment: text("final_judgment").notNull(),
+  createdAt: text("created_at").notNull(),
+  updatedAt: text("updated_at").notNull()
+});
+
+export const decisions = sqliteTable("decisions", {
+  id: text("id").primaryKey(),
+  companyId: text("company_id").references(() => companies.id, { onDelete: "set null" }),
+  checklistRunId: text("checklist_run_id").references(() => checklistRuns.id, { onDelete: "set null" }),
+  principleId: text("principle_id").references(() => investmentPrinciples.id, { onDelete: "set null" }),
+  decisionType: text("decision_type").notNull(),
+  finalUserJudgment: text("final_user_judgment").notNull(),
+  keyAssumptions: text("key_assumptions").notNull().default(""),
+  risks: text("risks").notNull().default(""),
+  opponentSummary: text("opponent_summary").notNull().default(""),
+  decisionDate: text("decision_date").notNull(),
+  createdAt: text("created_at").notNull(),
+  updatedAt: text("updated_at").notNull()
+});
