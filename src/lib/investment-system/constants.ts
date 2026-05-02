@@ -20,6 +20,14 @@ export type ChecklistTemplateItem = {
   required: boolean;
 };
 
+export type EffectiveChecklistTemplate = {
+  type: ChecklistType;
+  title: string;
+  items: ChecklistTemplateItem[];
+  isCustom: boolean;
+  updatedAt?: string;
+};
+
 export const checklistTemplates: Record<ChecklistType, ChecklistTemplateItem[]> = {
   buy: [
     { id: "circle", text: "公司是否在我的能力圈内，且我能解释它靠什么赚钱？", category: "能力圈", required: true },
@@ -44,6 +52,40 @@ export const checklistTemplates: Record<ChecklistType, ChecklistTemplateItem[]> 
     { id: "next_action", text: "是否写清下一步观察事项、触发条件或复查时间？", category: "下一步", required: true }
   ]
 };
+
+export function getDefaultChecklistTemplate(type: ChecklistType): EffectiveChecklistTemplate {
+  const meta = checklistTypes.find((item) => item.value === type);
+
+  return {
+    type,
+    title: meta?.label ?? type,
+    items: checklistTemplates[type],
+    isCustom: false
+  };
+}
+
+export function parseChecklistTemplateItems(value: string, type: ChecklistType) {
+  try {
+    const parsed = JSON.parse(value);
+
+    if (!Array.isArray(parsed)) {
+      return checklistTemplates[type];
+    }
+
+    const items = parsed
+      .map((item, index) => ({
+        id: typeof item.id === "string" && item.id.trim() ? item.id : `${type}_${index + 1}`,
+        text: typeof item.text === "string" ? item.text.trim() : "",
+        category: typeof item.category === "string" && item.category.trim() ? item.category.trim() : "通用",
+        required: Boolean(item.required)
+      }))
+      .filter((item) => item.text);
+
+    return items.length > 0 ? items : checklistTemplates[type];
+  } catch {
+    return checklistTemplates[type];
+  }
+}
 
 export function labelFor<T extends { value: string; label: string }>(options: T[], value: string) {
   return options.find((option) => option.value === value)?.label ?? value;

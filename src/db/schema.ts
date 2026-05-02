@@ -102,6 +102,16 @@ export const investmentPrinciples = sqliteTable("investment_principles", {
   updatedAt: text("updated_at").notNull()
 });
 
+export const customChecklistTemplates = sqliteTable("custom_checklist_templates", {
+  id: text("id").primaryKey(),
+  checklistType: text("checklist_type").notNull(),
+  title: text("title").notNull(),
+  itemsJson: text("items_json").notNull().default("[]"),
+  active: integer("active", { mode: "boolean" }).notNull().default(true),
+  createdAt: text("created_at").notNull(),
+  updatedAt: text("updated_at").notNull()
+});
+
 export const checklistRuns = sqliteTable("checklist_runs", {
   id: text("id").primaryKey(),
   checklistType: text("checklist_type").notNull(),
