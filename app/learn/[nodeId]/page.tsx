@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, Bot, CheckCircle2 } from "lucide-react";
+import { BookInsightPanel } from "@/components/learning/book-insight-panel";
 import { CoreIdeaPanel } from "@/components/learning/core-idea-panel";
+import { getBookInsight } from "@/lib/learning/book-insights";
 import {
   getKnowledgeNode,
   getRelatedNodes,
@@ -30,6 +32,7 @@ export default async function NodeDetailPage({ params }: NodeDetailPageProps) {
   }
 
   const relatedNodes = getRelatedNodes(node);
+  const bookInsight = node.type === "book" ? getBookInsight(node.id) : null;
   const mentorDraft = `请用通俗语言解释「${node.title}」，并结合 A 股价值投资实践举一个不构成投资建议的例子。`;
 
   return (
@@ -67,7 +70,7 @@ export default async function NodeDetailPage({ params }: NodeDetailPageProps) {
 
       <section className="grid gap-6 xl:grid-cols-[1fr_340px]">
         <div className="space-y-6">
-          <CoreIdeaPanel node={node} />
+          {bookInsight ? <BookInsightPanel insight={bookInsight} /> : <CoreIdeaPanel node={node} />}
           <InfoPanel title="A 股适配" items={node.aShareNotes} />
           <InfoPanel title="常见误解" items={node.misunderstandings} />
           <InfoPanel title="实践动作" items={node.practiceActions} />
