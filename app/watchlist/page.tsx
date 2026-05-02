@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { Bot, Building2, CheckCircle2, ShieldAlert } from "lucide-react";
 import { PendingButton } from "@/components/ui/pending-button";
-import { addCompany, updateCompany } from "./actions";
+import { ResearchExtractionPanel } from "@/components/watchlist/research-extraction-panel";
+import { addCompany, applyExtractionDraft, updateCompany } from "./actions";
 import type { companies } from "@/db/schema";
 import {
   companyTypes,
@@ -36,6 +37,8 @@ export default async function WatchlistPage() {
           </div>
         </div>
       </section>
+
+      <ResearchExtractionPanel companies={watchlist} applyAction={applyExtractionDraft} />
 
       <section className="grid gap-6 xl:grid-cols-[420px_1fr]">
         <div className="rounded-lg border border-border bg-card p-5">

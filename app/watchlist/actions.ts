@@ -25,6 +25,16 @@ const updateSchema = companySchema.extend({
   companyId: z.string().trim().min(1)
 });
 
+const extractionDraftSchema = z.object({
+  companyId: z.string().trim().min(1),
+  industry: z.string().trim().default(""),
+  companyType: z.string().trim().default("other"),
+  description: z.string().trim().default(""),
+  thesis: z.string().trim().default(""),
+  keyRisks: z.string().trim().default(""),
+  nextAction: z.string().trim().default("")
+});
+
 function now() {
   return new Date().toISOString();
 }
@@ -94,6 +104,35 @@ export async function updateCompany(formData: FormData) {
     .set({
       ...values,
       stockCode: normalizeCode(values.stockCode),
+      updatedAt: now()
+    })
+    .where(eq(companies.id, companyId));
+
+  revalidatePath("/watchlist");
+}
+
+export async function applyExtractionDraft(formData: FormData) {
+  const parsed = extractionDraftSchema.safeParse({
+    companyId: formData.get("companyId"),
+    industry: formData.get("industry"),
+    companyType: formData.get("companyType"),
+    description: formData.get("description"),
+    thesis: formData.get("thesis"),
+    keyRisks: formData.get("keyRisks"),
+    nextAction: formData.get("nextAction")
+  });
+
+  if (!parsed.success) {
+    return;
+  }
+
+  const { companyId, ...values } = parsed.data;
+
+  await db
+    .update(companies)
+    .set({
+      ...values,
+      watchStatus: "researching",
       updatedAt: now()
     })
     .where(eq(companies.id, companyId));
