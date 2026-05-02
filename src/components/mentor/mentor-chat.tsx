@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Bot, MessageSquarePlus, Send, ShieldAlert, UserRound } from "lucide-react";
+import { Bot, ChevronDown, ChevronUp, MessageSquarePlus, Send, ShieldAlert, UserRound } from "lucide-react";
 import { aiRoles } from "@/lib/model-config/constants";
 import type {
   ConversationMessage,
@@ -253,6 +253,8 @@ export function MentorChat({
 
 function ChatBubble({ message }: { message: ConversationMessage }) {
   const isUser = message.role === "user";
+  const [isExpanded, setIsExpanded] = useState(false);
+  const isLongAssistantMessage = !isUser && isLongMessage(message.content);
 
   return (
     <div className={`flex gap-3 ${isUser ? "justify-end" : "justify-start"}`}>
@@ -262,13 +264,40 @@ function ChatBubble({ message }: { message: ConversationMessage }) {
         </span>
       ) : null}
       <div
-        className={`max-w-3xl whitespace-pre-wrap rounded-lg border px-4 py-3 text-sm leading-6 ${
+        className={`max-w-3xl rounded-lg border px-4 py-3 text-sm leading-6 ${
           isUser
             ? "border-primary bg-primary text-primary-foreground"
             : "border-border bg-background text-foreground"
         }`}
       >
-        {message.content}
+        <div
+          className={`whitespace-pre-wrap ${
+            isLongAssistantMessage && !isExpanded
+              ? "max-h-[360px] overflow-y-auto pr-2"
+              : ""
+          }`}
+        >
+          {message.content}
+        </div>
+        {isLongAssistantMessage ? (
+          <button
+            type="button"
+            onClick={() => setIsExpanded((current) => !current)}
+            className="mt-3 inline-flex items-center gap-1 rounded-md border border-border bg-card px-2 py-1 text-xs font-semibold text-muted-foreground transition hover:bg-muted hover:text-foreground"
+          >
+            {isExpanded ? (
+              <>
+                <ChevronUp className="h-3.5 w-3.5" aria-hidden />
+                收起
+              </>
+            ) : (
+              <>
+                <ChevronDown className="h-3.5 w-3.5" aria-hidden />
+                展开全文
+              </>
+            )}
+          </button>
+        ) : null}
       </div>
       {isUser ? (
         <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-border bg-background">
@@ -277,6 +306,10 @@ function ChatBubble({ message }: { message: ConversationMessage }) {
       ) : null}
     </div>
   );
+}
+
+function isLongMessage(content: string) {
+  return content.length > 700 || content.split("\n").length > 18;
 }
 
 function upsertConversation(
