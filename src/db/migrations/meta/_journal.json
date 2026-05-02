@@ -43,6 +43,13 @@
       "when": 1777705793377,
       "tag": "0005_lush_bruce_banner",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1777706205950,
+      "tag": "0006_amazing_husk",
+      "breakpoints": true
     }
   ]
 }

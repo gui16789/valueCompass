@@ -146,3 +146,19 @@ export const valuations = sqliteTable("valuations", {
   createdAt: text("created_at").notNull(),
   updatedAt: text("updated_at").notNull()
 });
+
+export const reviews = sqliteTable("reviews", {
+  id: text("id").primaryKey(),
+  decisionId: text("decision_id").references(() => decisions.id, { onDelete: "set null" }),
+  companyId: text("company_id").references(() => companies.id, { onDelete: "set null" }),
+  reviewType: text("review_type").notNull().default("post_decision"),
+  reviewDate: text("review_date").notNull(),
+  whatHappened: text("what_happened").notNull().default(""),
+  assumptionsValidated: text("assumptions_validated").notNull().default(""),
+  assumptionsFailed: text("assumptions_failed").notNull().default(""),
+  lessons: text("lessons").notNull().default(""),
+  principleChangesNeeded: text("principle_changes_needed").notNull().default(""),
+  aiSummary: text("ai_summary").notNull().default(""),
+  createdAt: text("created_at").notNull(),
+  updatedAt: text("updated_at").notNull()
+});
