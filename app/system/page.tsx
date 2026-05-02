@@ -13,14 +13,14 @@ import { SectionHeader } from "@/components/ui/section-header";
 import type { checklistRuns, companies, decisions, investmentPrinciples } from "@/db/schema";
 import {
   checklistStatuses,
-  checklistTemplates,
   checklistTypes,
   labelFor,
+  type EffectiveChecklistTemplate,
   type ChecklistTemplateItem,
   type ChecklistType
 } from "@/lib/investment-system/constants";
 import { getSystemPageData } from "@/lib/investment-system/queries";
-import { saveChecklistRun, saveInvestmentPrinciple } from "./actions";
+import { saveChecklistRun, saveChecklistTemplate, saveInvestmentPrinciple } from "./actions";
 
 type SystemPageProps = {
   searchParams?: Promise<{
@@ -65,8 +65,14 @@ export default async function SystemPage({ searchParams }: SystemPageProps) {
 
       <section className="grid gap-6 xl:grid-cols-[0.95fr_1.05fr]">
         <PrinciplePanel principle={data.principle} />
-        <ChecklistPanel principle={data.principle} companies={data.companies} />
+        <ChecklistPanel
+          principle={data.principle}
+          companies={data.companies}
+          templates={data.checklistTemplates}
+        />
       </section>
+
+      <ChecklistTemplateEditor templates={data.checklistTemplates} />
 
       <section className="grid gap-6 xl:grid-cols-2">
         <RecentRuns runs={data.recentRuns} principle={data.principle} />
@@ -122,7 +128,15 @@ function PrinciplePanel({ principle }: { principle?: Principle }) {
   );
 }
 
-function ChecklistPanel({ principle, companies }: { principle?: Principle; companies: Company[] }) {
+function ChecklistPanel({
+  principle,
+  companies,
+  templates
+}: {
+  principle?: Principle;
+  companies: Company[];
+  templates: Record<ChecklistType, EffectiveChecklistTemplate>;
+}) {
   return (
     <section className="rounded-lg border border-border bg-card p-6">
       <div className="flex items-center gap-2">
@@ -141,20 +155,37 @@ function ChecklistPanel({ principle, companies }: { principle?: Principle; compa
 
       <div className="mt-5 space-y-5">
         {checklistTypes.map((type) => (
-          <ChecklistForm key={type.value} type={type.value as ChecklistType} companies={companies} />
+          <ChecklistForm
+            key={type.value}
+            type={type.value as ChecklistType}
+            companies={companies}
+            template={templates[type.value as ChecklistType]}
+          />
         ))}
       </div>
     </section>
   );
 }
 
-function ChecklistForm({ type, companies }: { type: ChecklistType; companies: Company[] }) {
-  const template = checklistTemplates[type];
+function ChecklistForm({
+  type,
+  companies,
+  template
+}: {
+  type: ChecklistType;
+  companies: Company[];
+  template: EffectiveChecklistTemplate;
+}) {
   const typeMeta = checklistTypes.find((item) => item.value === type);
 
   return (
     <details className="rounded-lg border border-border bg-background p-4" open={type === "buy"}>
-      <summary className="cursor-pointer text-sm font-semibold">{typeMeta?.label ?? type}</summary>
+      <summary className="cursor-pointer text-sm font-semibold">
+        {typeMeta?.label ?? type}
+        <span className="ml-2 text-xs text-muted-foreground">
+          {template.isCustom ? "自定义模板" : "默认模板"} / {template.items.length} 项
+        </span>
+      </summary>
       <form action={saveChecklistRun} className="mt-4 space-y-4">
         <input type="hidden" name="checklistType" value={type} />
         <label className="block">
@@ -173,7 +204,7 @@ function ChecklistForm({ type, companies }: { type: ChecklistType; companies: Co
         </label>
 
         <div className="space-y-3">
-          {template.map((item) => (
+          {template.items.map((item) => (
             <ChecklistItem key={item.id} item={item} />
           ))}
         </div>
@@ -189,6 +220,99 @@ function ChecklistForm({ type, companies }: { type: ChecklistType; companies: Co
         >
           <CheckCircle2 className="h-4 w-4" aria-hidden />
           保存检查和决策记录
+        </PendingButton>
+      </form>
+    </details>
+  );
+}
+
+function ChecklistTemplateEditor({
+  templates
+}: {
+  templates: Record<ChecklistType, EffectiveChecklistTemplate>;
+}) {
+  return (
+    <section className="rounded-lg border border-border bg-card p-6">
+      <div className="flex items-center gap-2">
+        <ClipboardCheck className="h-5 w-5 text-primary" aria-hidden />
+        <h2 className="text-xl font-semibold">自定义检查清单</h2>
+      </div>
+      <p className="mt-2 text-sm leading-6 text-muted-foreground">
+        修改模板后，新的检查会使用自定义项；历史检查记录保留当时保存的项目，不会被改写。
+      </p>
+
+      <div className="mt-5 grid gap-5 xl:grid-cols-3">
+        {checklistTypes.map((type) => (
+          <ChecklistTemplateForm
+            key={type.value}
+            type={type.value as ChecklistType}
+            template={templates[type.value as ChecklistType]}
+          />
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function ChecklistTemplateForm({
+  type,
+  template
+}: {
+  type: ChecklistType;
+  template: EffectiveChecklistTemplate;
+}) {
+  const meta = checklistTypes.find((item) => item.value === type);
+  const rows = Array.from({ length: 8 }, (_, index) => template.items[index]);
+
+  return (
+    <details className="rounded-lg border border-border bg-background p-4" open={type === "buy"}>
+      <summary className="cursor-pointer text-sm font-semibold">
+        {meta?.label ?? type}
+        <span className="ml-2 text-xs text-muted-foreground">
+          {template.isCustom ? "已自定义" : "默认"}
+        </span>
+      </summary>
+      <form action={saveChecklistTemplate} className="mt-4 space-y-4">
+        <input type="hidden" name="checklistType" value={type} />
+        <Field label="模板名称" name="title" defaultValue={template.title} />
+
+        <div className="space-y-3">
+          {rows.map((item, index) => (
+            <div key={`${type}-${index}`} className="rounded-md border border-border bg-card p-3">
+              <div className="grid gap-3 md:grid-cols-[1fr_120px]">
+                <label className="block">
+                  <span className="text-xs font-semibold text-primary">检查问题 {index + 1}</span>
+                  <input
+                    name={`itemText.${index}`}
+                    defaultValue={item?.text ?? ""}
+                    placeholder="留空则不保存这一项"
+                    className="mt-2 w-full rounded-md border border-border bg-background px-3 py-2 text-sm outline-none transition focus:border-primary"
+                  />
+                </label>
+                <label className="block">
+                  <span className="text-xs font-semibold text-primary">分类</span>
+                  <input
+                    name={`itemCategory.${index}`}
+                    defaultValue={item?.category ?? ""}
+                    placeholder="通用"
+                    className="mt-2 w-full rounded-md border border-border bg-background px-3 py-2 text-sm outline-none transition focus:border-primary"
+                  />
+                </label>
+              </div>
+              <label className="mt-3 inline-flex items-center gap-2 text-sm text-muted-foreground">
+                <input name={`itemRequired.${index}`} type="checkbox" defaultChecked={item?.required ?? false} />
+                关键项
+              </label>
+            </div>
+          ))}
+        </div>
+
+        <PendingButton
+          className="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition hover:opacity-90 disabled:opacity-50"
+          pendingChildren="保存中..."
+        >
+          <CheckCircle2 className="h-4 w-4" aria-hidden />
+          保存模板
         </PendingButton>
       </form>
     </details>

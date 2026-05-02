@@ -5,9 +5,9 @@ import { redirect } from "next/navigation";
 import { eq } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "@/db/client";
-import { checklistRuns, decisions, investmentPrinciples } from "@/db/schema";
-import { checklistTemplates, checklistTypes, labelFor } from "@/lib/investment-system/constants";
-import { getActiveInvestmentPrinciple } from "@/lib/investment-system/queries";
+import { checklistRuns, customChecklistTemplates, decisions, investmentPrinciples } from "@/db/schema";
+import { checklistTypes, labelFor, type ChecklistTemplateItem } from "@/lib/investment-system/constants";
+import { getActiveInvestmentPrinciple, getEffectiveChecklistTemplate } from "@/lib/investment-system/queries";
 
 const principleSchema = z.object({
   principleId: z.string().optional(),
@@ -30,6 +30,11 @@ const runSchema = z.object({
   keyAssumptions: z.string().trim().default(""),
   risks: z.string().trim().default(""),
   summary: z.string().trim().default("")
+});
+
+const templateSchema = z.object({
+  checklistType: z.enum(["buy", "sell", "do_nothing"]),
+  title: z.string().trim().min(1, "请填写模板名称。")
 });
 
 function now() {
@@ -110,8 +115,8 @@ export async function saveChecklistRun(formData: FormData) {
     statusRedirect("error", parsed.error.issues[0]?.message ?? "检查清单校验失败。");
   }
 
-  const template = checklistTemplates[parsed.data.checklistType];
-  const items = template.map((item) => {
+  const template = await getEffectiveChecklistTemplate(parsed.data.checklistType);
+  const items = template.items.map((item) => {
     const status = String(formData.get(`status.${item.id}`) ?? "unknown");
     const normalizedStatus = ["pass", "fail", "unknown", "not_applicable"].includes(status)
       ? status
@@ -168,4 +173,64 @@ export async function saveChecklistRun(formData: FormData) {
 
   revalidatePath("/system");
   statusRedirect("success", "检查清单和决策记录已保存。");
+}
+
+export async function saveChecklistTemplate(formData: FormData) {
+  const parsed = templateSchema.safeParse({
+    checklistType: formData.get("checklistType"),
+    title: formData.get("title")
+  });
+
+  if (!parsed.success) {
+    statusRedirect("error", parsed.error.issues[0]?.message ?? "清单模板校验失败。");
+  }
+
+  const items = Array.from({ length: 8 }, (_, index) => {
+    const text = String(formData.get(`itemText.${index}`) ?? "").trim();
+    const category = String(formData.get(`itemCategory.${index}`) ?? "").trim() || "通用";
+    const required = formData.get(`itemRequired.${index}`) === "on";
+
+    return {
+      id: `${parsed.data.checklistType}_${index + 1}`,
+      text,
+      category,
+      required
+    };
+  }).filter((item): item is ChecklistTemplateItem => Boolean(item.text));
+
+  if (items.length === 0) {
+    statusRedirect("error", "至少保留 1 个检查项。");
+  }
+
+  const timestamp = now();
+  const [existingTemplate] = await db
+    .select()
+    .from(customChecklistTemplates)
+    .where(eq(customChecklistTemplates.checklistType, parsed.data.checklistType))
+    .limit(1);
+
+  if (existingTemplate) {
+    await db
+      .update(customChecklistTemplates)
+      .set({
+        title: parsed.data.title,
+        itemsJson: JSON.stringify(items),
+        active: true,
+        updatedAt: timestamp
+      })
+      .where(eq(customChecklistTemplates.id, existingTemplate.id));
+  } else {
+    await db.insert(customChecklistTemplates).values({
+      id: crypto.randomUUID(),
+      checklistType: parsed.data.checklistType,
+      title: parsed.data.title,
+      itemsJson: JSON.stringify(items),
+      active: true,
+      createdAt: timestamp,
+      updatedAt: timestamp
+    });
+  }
+
+  revalidatePath("/system");
+  statusRedirect("success", "检查清单模板已保存。");
 }
