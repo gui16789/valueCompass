@@ -14,19 +14,21 @@ type MentorChatProps = {
   initialConversationId: string | null;
   initialRole: AiRole;
   initialMessages: ConversationMessage[];
+  initialDraft?: string;
 };
 
 export function MentorChat({
   initialConversations,
   initialConversationId,
   initialRole,
-  initialMessages
+  initialMessages,
+  initialDraft = ""
 }: MentorChatProps) {
   const [conversations, setConversations] = useState(initialConversations);
   const [activeConversationId, setActiveConversationId] = useState(initialConversationId);
   const [activeRole, setActiveRole] = useState<AiRole>(initialRole);
   const [messages, setMessages] = useState(initialMessages);
-  const [input, setInput] = useState("");
+  const [input, setInput] = useState(initialDraft);
   const [isSending, setIsSending] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
