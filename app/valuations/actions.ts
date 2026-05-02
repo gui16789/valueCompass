@@ -17,8 +17,8 @@ const valuationSchema = z.object({
   templateType: z.enum(["financial", "cyclical", "consumer", "manufacturing"]),
   title: z.string().trim().min(1, "请填写估值标题。"),
   valuationDate: z.string().trim().min(1, "请选择估值日期。"),
-  currentPrice: z.coerce.number().nonnegative("当前价格不能为负。"),
-  sharesOutstanding: z.coerce.number().positive("总股本必须大于 0。"),
+  currentPrice: z.coerce.number().nonnegative("当前价格不能为负，请按元/股填写。"),
+  sharesOutstanding: z.coerce.number().positive("请填写总股本（亿股），且必须大于 0。例如：76.63。"),
   userNotes: z.string().trim().default("")
 });
 
@@ -61,7 +61,9 @@ export async function saveValuation(formData: FormData) {
   const invalidScenario = scenarioInputs.find((scenario) => scenario.basisAmount <= 0);
 
   if (invalidScenario) {
-    statusRedirect("error", "三个情景都需要填写有效的估值起点。");
+    const scenarioLabel = scenarios.find((scenario) => scenario.value === invalidScenario.name)?.label ?? invalidScenario.name;
+    const template = getTemplate(parsed.data.templateType);
+    statusRedirect("error", `请填写${scenarioLabel}情景的${template.basisLabel}，且必须大于 0。`);
   }
 
   const result = calculateValuation({
