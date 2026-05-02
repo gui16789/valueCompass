@@ -17,6 +17,7 @@
 - [VALUATION_TEMPLATE_FIELDS.md](./VALUATION_TEMPLATE_FIELDS.md)：估值模板字段规格，定义四类 A 股模板和通用估值工具的最小字段。
 - [UI_PROTOTYPE.md](./UI_PROTOTYPE.md)：前端低保真原型说明，定义工作台、AI 导师、观察池、估值和决策检查页面线框。
 - [PROJECT_GOVERNANCE.md](./PROJECT_GOVERNANCE.md)：项目管理与开发规范，定义 Issue、分支、PR、验证、回退和防偏离规则。
+- [ISSUE_BACKLOG.md](./ISSUE_BACKLOG.md)：初始 Issue Backlog，定义后续应创建到 GitHub Issues 的任务拆分。
 
 ## 当前产品边界
 
