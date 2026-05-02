@@ -32,6 +32,12 @@ const updateProviderSchema = z.object({
   allowInsecureTls: z.boolean().default(false)
 });
 
+const roleConfigSchema = z.object({
+  role: z.string().min(1),
+  modelName: z.string().min(1),
+  temperature: z.coerce.number().min(0).max(1)
+});
+
 function now() {
   return new Date().toISOString();
 }
@@ -164,13 +170,38 @@ export async function updateModelProvider(formData: FormData) {
     .where(eq(modelProviders.id, parsed.data.providerId));
 
   await db
-    .update(modelConfigs)
-    .set({
-      modelName: parsed.data.defaultModelName,
-      temperature,
-      updatedAt
-    })
+    .delete(modelConfigs)
     .where(eq(modelConfigs.providerId, parsed.data.providerId));
+
+  const roleConfigs = aiRoles.map((role) => {
+    const modelName =
+      String(formData.get(`roleModelName.${role.value}`) ?? "").trim() ||
+      parsed.data.defaultModelName;
+    const roleConfig = roleConfigSchema.safeParse({
+      role: role.value,
+      modelName,
+      temperature:
+        formData.get(`roleTemperature.${role.value}`) ??
+        parsed.data.temperature
+    });
+
+    if (!roleConfig.success) {
+      statusRedirect("error", `${role.label} 的模型或温度配置无效。`);
+    }
+
+    return {
+      id: crypto.randomUUID(),
+      providerId: parsed.data.providerId,
+      role: role.value,
+      modelName,
+      temperature: normalizeTemperature(roleConfig.data.temperature),
+      enabled: true,
+      createdAt: updatedAt,
+      updatedAt
+    };
+  });
+
+  await db.insert(modelConfigs).values(roleConfigs);
 
   revalidatePath("/settings");
   statusRedirect("success", "模型提供商已更新，请重新测试连接。");
