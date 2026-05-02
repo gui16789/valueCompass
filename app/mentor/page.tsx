@@ -2,14 +2,26 @@ import Link from "next/link";
 import { SectionHeader } from "@/components/ui/section-header";
 import { MentorChat } from "@/components/mentor/mentor-chat";
 import { getMentorWorkspace } from "@/lib/ai/conversations";
+import type { AiRole } from "@/lib/ai/types";
 import { getModelProvidersWithConfigs } from "@/lib/model-config/queries";
 
-export default async function MentorPage() {
-  const [workspace, providers] = await Promise.all([
+type MentorPageProps = {
+  searchParams?: Promise<{
+    draft?: string;
+    role?: string;
+  }>;
+};
+
+export default async function MentorPage({ searchParams }: MentorPageProps) {
+  const searchParamsPromise: Promise<{ draft?: string; role?: string }> =
+    searchParams ?? Promise.resolve({});
+  const [params, workspace, providers] = await Promise.all([
+    searchParamsPromise,
     getMentorWorkspace(),
     getModelProvidersWithConfigs()
   ]);
   const hasProvider = providers.length > 0;
+  const initialRole = normalizeRole(params.role) ?? workspace.activeRole;
 
   return (
     <main className="space-y-6">
@@ -45,10 +57,19 @@ export default async function MentorPage() {
         <MentorChat
           initialConversations={workspace.conversations}
           initialConversationId={workspace.activeConversationId}
-          initialRole={workspace.activeRole}
+          initialRole={initialRole}
           initialMessages={workspace.messages}
+          initialDraft={params.draft ?? ""}
         />
       )}
     </main>
   );
+}
+
+function normalizeRole(role: string | undefined): AiRole | null {
+  if (role === "mentor" || role === "opponent" || role === "examiner" || role === "research_assistant") {
+    return role;
+  }
+
+  return null;
 }
