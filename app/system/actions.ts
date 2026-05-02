@@ -34,8 +34,20 @@ const runSchema = z.object({
 
 const templateSchema = z.object({
   checklistType: z.enum(["buy", "sell", "do_nothing"]),
-  title: z.string().trim().min(1, "请填写模板名称。")
+  title: z.string().trim().min(1, "请填写模板名称。"),
+  itemsJson: z.string().trim().min(1, "请至少保留 1 个检查项。")
 });
+
+const templateItemSchema = z.array(
+  z.object({
+    id: z.string().trim().optional(),
+    text: z.string().trim(),
+    category: z.string().trim().optional(),
+    required: z.boolean().default(false)
+  })
+).max(20, "每个模板最多保留 20 个检查项。");
+
+const safeItemIdPattern = /^[a-zA-Z0-9_-]+$/;
 
 function now() {
   return new Date().toISOString();
@@ -178,25 +190,44 @@ export async function saveChecklistRun(formData: FormData) {
 export async function saveChecklistTemplate(formData: FormData) {
   const parsed = templateSchema.safeParse({
     checklistType: formData.get("checklistType"),
-    title: formData.get("title")
+    title: formData.get("title"),
+    itemsJson: formData.get("itemsJson")
   });
 
   if (!parsed.success) {
     statusRedirect("error", parsed.error.issues[0]?.message ?? "清单模板校验失败。");
   }
 
-  const items = Array.from({ length: 8 }, (_, index) => {
-    const text = String(formData.get(`itemText.${index}`) ?? "").trim();
-    const category = String(formData.get(`itemCategory.${index}`) ?? "").trim() || "通用";
-    const required = formData.get(`itemRequired.${index}`) === "on";
+  let rawItems: unknown;
 
-    return {
-      id: `${parsed.data.checklistType}_${index + 1}`,
-      text,
-      category,
-      required
-    };
-  }).filter((item): item is ChecklistTemplateItem => Boolean(item.text));
+  try {
+    rawItems = JSON.parse(parsed.data.itemsJson);
+  } catch {
+    statusRedirect("error", "检查项数据格式不正确，请刷新后重试。");
+  }
+
+  const parsedItems = templateItemSchema.safeParse(rawItems);
+
+  if (!parsedItems.success) {
+    statusRedirect("error", parsedItems.error.issues[0]?.message ?? "检查项校验失败。");
+  }
+
+  const usedIds = new Set<string>();
+  const items = parsedItems.data
+    .map((item, index) => {
+      const fallbackId = `${parsed.data.checklistType}_${index + 1}`;
+      const rawId = item.id && safeItemIdPattern.test(item.id) ? item.id : fallbackId;
+      const id = usedIds.has(rawId) ? fallbackId : rawId;
+      usedIds.add(id);
+
+      return {
+        id,
+        text: item.text,
+        category: item.category?.trim() || "通用",
+        required: item.required
+      };
+    })
+    .filter((item): item is ChecklistTemplateItem => Boolean(item.text));
 
   if (items.length === 0) {
     statusRedirect("error", "至少保留 1 个检查项。");
