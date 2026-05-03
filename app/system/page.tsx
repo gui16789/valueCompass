@@ -55,8 +55,8 @@ export default async function SystemPage({ searchParams }: SystemPageProps) {
           />
           <div className="grid grid-cols-3 gap-2 rounded-lg border border-border bg-background p-3 text-center">
             <Metric label="原则" value={data.principle ? 1 : 0} />
+            <Metric label="版本" value={data.principleHistory.length} />
             <Metric label="检查" value={data.recentRuns.length} />
-            <Metric label="决策" value={data.recentDecisions.length} />
           </div>
         </div>
       </section>
@@ -74,6 +74,8 @@ export default async function SystemPage({ searchParams }: SystemPageProps) {
         />
       </section>
 
+      <PrincipleVersionPanel versions={data.principleHistory} />
+
       <ChecklistTemplateEditor templates={data.checklistTemplates} saveAction={saveChecklistTemplate} />
 
       <section className="grid gap-6 xl:grid-cols-2">
@@ -83,6 +85,19 @@ export default async function SystemPage({ searchParams }: SystemPageProps) {
     </main>
   );
 }
+
+const principleDiffFields: Array<{ key: keyof Principle; label: string }> = [
+  { key: "title", label: "原则名称" },
+  { key: "circleOfCompetence", label: "能力圈" },
+  { key: "excludedIndustries", label: "不碰行业 / 情形" },
+  { key: "minimumFinancialQuality", label: "财务质量底线" },
+  { key: "minimumMarginOfSafety", label: "安全边际要求" },
+  { key: "positionRules", label: "仓位规则" },
+  { key: "buyRules", label: "买入规则" },
+  { key: "sellRules", label: "卖出规则" },
+  { key: "doNothingRules", label: "不操作规则" },
+  { key: "riskRules", label: "风险规则" }
+];
 
 function PrinciplePanel({ principle }: { principle?: Principle }) {
   const auditDraft = `请作为投资委员会反方委员，检查我的 A 股价值投资原则是否足够清晰、可执行、可反证。不要替我制定最终原则，也不要给买卖建议。我的原则如下：能力圈=${principle?.circleOfCompetence || "未填写"}；不碰行业=${principle?.excludedIndustries || "未填写"}；财务质量=${principle?.minimumFinancialQuality || "未填写"}；安全边际=${principle?.minimumMarginOfSafety || "未填写"}；买入规则=${principle?.buyRules || "未填写"}；卖出规则=${principle?.sellRules || "未填写"}；不操作规则=${principle?.doNothingRules || "未填写"}。`;
@@ -126,6 +141,82 @@ function PrinciplePanel({ principle }: { principle?: Principle }) {
           保存投资原则
         </PendingButton>
       </form>
+    </section>
+  );
+}
+
+function PrincipleVersionPanel({ versions }: { versions: Principle[] }) {
+  const current = versions.find((version) => version.active) ?? versions[0];
+  const previous = versions.find((version) => current && version.id !== current.id);
+  const changes =
+    current && previous
+      ? principleDiffFields.filter(({ key }) => String(current[key] ?? "") !== String(previous[key] ?? ""))
+      : [];
+
+  return (
+    <section className="grid gap-6 xl:grid-cols-[0.95fr_1.05fr]">
+      <div className="rounded-lg border border-border bg-card p-6">
+        <div className="flex items-center gap-2">
+          <History className="h-5 w-5 text-primary" aria-hidden />
+          <h2 className="text-xl font-semibold">原则版本历史</h2>
+        </div>
+        <p className="mt-2 text-sm leading-6 text-muted-foreground">
+          每次修改投资原则都会生成新版本，旧版本保留用于复盘和追溯。
+        </p>
+
+        <div className="mt-5 space-y-3">
+          {versions.length === 0 ? (
+            <EmptyState text="还没有保存过投资原则。先保存一版原则，后续修改会自动形成历史版本。" />
+          ) : (
+            versions.map((version) => (
+              <article key={version.id} className="rounded-lg border border-border bg-background p-4">
+                <div className="flex flex-col gap-2 md:flex-row md:items-start md:justify-between">
+                  <div>
+                    <div className="text-sm font-semibold">
+                      v{version.version} / {version.title}
+                    </div>
+                    <p className="mt-1 text-sm text-muted-foreground">
+                      创建 {version.createdAt.slice(0, 10)} / 更新 {version.updatedAt.slice(0, 10)}
+                    </p>
+                  </div>
+                  <span className="rounded-full border border-border bg-card px-3 py-1 text-xs font-semibold text-muted-foreground">
+                    {version.active ? "当前版本" : "历史版本"}
+                  </span>
+                </div>
+                <p className="mt-3 line-clamp-2 text-sm leading-6 text-muted-foreground">
+                  {version.circleOfCompetence || version.minimumMarginOfSafety || "该版本暂未填写核心原则内容。"}
+                </p>
+              </article>
+            ))
+          )}
+        </div>
+      </div>
+
+      <div className="rounded-lg border border-border bg-card p-6">
+        <h2 className="text-xl font-semibold">与上一版变化</h2>
+        {!current ? (
+          <EmptyState text="保存第一版原则后，这里会展示后续版本变化。" />
+        ) : !previous ? (
+          <EmptyState text={`当前只有 v${current.version}，下一次修改后会显示字段变化。`} />
+        ) : changes.length === 0 ? (
+          <EmptyState text={`v${current.version} 与 v${previous.version} 暂无可见字段变化。`} />
+        ) : (
+          <div className="mt-5 space-y-3">
+            <div className="rounded-md border border-border bg-background p-3 text-sm leading-6 text-muted-foreground">
+              当前 v{current.version} 对比上一版 v{previous.version}，共变化 {changes.length} 个字段。
+            </div>
+            {changes.map(({ key, label }) => (
+              <div key={String(key)} className="rounded-lg border border-border bg-background p-4">
+                <div className="text-sm font-semibold text-primary">{label}</div>
+                <div className="mt-3 grid gap-3 md:grid-cols-2">
+                  <InfoBlock title={`v${previous.version}`} value={String(previous[key] || "未填写")} />
+                  <InfoBlock title={`v${current.version}`} value={String(current[key] || "未填写")} />
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
     </section>
   );
 }

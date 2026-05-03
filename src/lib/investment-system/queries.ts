@@ -20,9 +20,17 @@ export async function getActiveInvestmentPrinciple() {
   return principle;
 }
 
+export async function getInvestmentPrincipleHistory() {
+  return db
+    .select()
+    .from(investmentPrinciples)
+    .orderBy(desc(investmentPrinciples.version), desc(investmentPrinciples.createdAt));
+}
+
 export async function getSystemPageData() {
-  const [principle, companyRows, runRows, decisionRows, templates] = await Promise.all([
+  const [principle, principleHistory, companyRows, runRows, decisionRows, templates] = await Promise.all([
     getActiveInvestmentPrinciple(),
+    getInvestmentPrincipleHistory(),
     db.select().from(companies).orderBy(desc(companies.updatedAt)),
     db
       .select({
@@ -47,6 +55,7 @@ export async function getSystemPageData() {
 
   return {
     principle,
+    principleHistory,
     companies: companyRows,
     recentRuns: runRows,
     recentDecisions: decisionRows,
