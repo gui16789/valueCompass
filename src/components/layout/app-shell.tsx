@@ -9,7 +9,6 @@ const navItems = [
   { href: "/valuations", label: "估值工具" },
   { href: "/system", label: "投资系统" },
   { href: "/reviews", label: "复盘" },
-  { href: "/prototype", label: "原型" },
   { href: "/settings", label: "设置" }
 ];
 

@@ -1039,6 +1039,195 @@ const rawKnowledgeNodes: KnowledgeNode[] = [
     order: 44
   },
   {
+    id: "concept-pe",
+    type: "concept",
+    title: "PE 市盈率",
+    period: "估值与市场指标",
+    school: "指标辅助工具",
+    summary: "PE 是市值与利润的比例，用来观察价格相对盈利是否昂贵，但必须结合行业、周期、利润质量和增长判断。",
+    coreIdeas: ["市盈率", "盈利倍数", "利润质量", "估值陷阱"],
+    books: ["《证券分析》", "《聪明的投资者》"],
+    aShareNotes: [
+      "A 股中 PE 适合盈利相对稳定的消费、成熟制造等公司，不适合直接套用到强周期和金融股。",
+      "低 PE 可能是便宜，也可能是周期顶部利润、一次性收益或市场预期利润下滑。",
+      "高 PE 可能代表成长预期，也可能代表过度乐观，必须用反向 DCF 或利润情景验证。"
+    ],
+    misunderstandings: [
+      "PE 越低越安全。",
+      "所有行业都可以用 PE 横向比较。",
+      "只看静态 PE，不看利润是否可持续。"
+    ],
+    practiceActions: [
+      "用过去三年净利润和扣非净利润比较静态 PE 的可靠性。",
+      "判断公司属于稳定盈利、周期盈利还是成长投入阶段。",
+      "把 PE 拆成价格、利润、增长和风险四个问题。"
+    ],
+    relatedIds: ["concept-pb-pe", "concept-good-company-good-price", "concept-value-trap"],
+    order: 44.1
+  },
+  {
+    id: "concept-peg",
+    type: "concept",
+    title: "PEG",
+    period: "估值与市场指标",
+    school: "指标辅助工具",
+    summary: "PEG 用 PE 除以盈利增长率，尝试把估值和成长速度放在一起看，但对增长可持续性非常敏感。",
+    coreIdeas: ["PEG", "成长匹配", "增长质量", "预期验证"],
+    books: ["《彼得·林奇的成功投资》", "《怎样选择成长股》"],
+    aShareNotes: [
+      "PEG 适合粗看成长股估值和增长是否匹配，但不能替代现金流、竞争格局和资本开支分析。",
+      "A 股热门赛道增长率波动大，单年高增长会让 PEG 看起来便宜。",
+      "PEG 应使用可持续增长率，而不是只使用下一年预测增速。"
+    ],
+    misunderstandings: [
+      "PEG 小于 1 就一定便宜。",
+      "把一次性高增长当作长期增长。",
+      "忽略增长背后的毛利率、费用率和自由现金流。"
+    ],
+    practiceActions: [
+      "分别用过去三年复合增速和未来三年保守增速计算 PEG。",
+      "列出增长率下降一半时估值是否仍可接受。",
+      "把 PEG 结论和反向 DCF 隐含增长做交叉验证。"
+    ],
+    relatedIds: ["person-peter-lynch", "school-growth-value", "concept-reverse-dcf"],
+    order: 44.2
+  },
+  {
+    id: "concept-moving-average",
+    type: "concept",
+    title: "均线",
+    period: "技术面指标",
+    school: "指标辅助工具",
+    summary: "均线把一段时间的价格平均化，用来观察趋势和市场成本区间，但它反映的是价格历史，不代表企业价值。",
+    coreIdeas: ["移动平均线", "趋势过滤", "市场成本", "滞后指标"],
+    books: ["《聪明的投资者》"],
+    aShareNotes: [
+      "均线可帮助观察市场情绪和趋势强弱，但不能判断公司是否低估。",
+      "价值投资中可以用均线提醒自己价格处在什么市场状态，再回到估值和基本面做判断。",
+      "A 股波动较大，均线突破和跌破容易产生噪音，不能单独作为交易规则。"
+    ],
+    misunderstandings: [
+      "站上均线就代表可以买。",
+      "跌破均线就代表公司价值变坏。",
+      "把短期趋势当成长期投资结论。"
+    ],
+    practiceActions: [
+      "观察 20 日、60 日、250 日均线分别反映短期、中期、长期价格状态。",
+      "把均线变化和公司基本面事件分开记录。",
+      "当价格大幅偏离长期均线时，回到估值区间检查情绪是否过热或过冷。"
+    ],
+    relatedIds: ["concept-market-mr", "concept-do-nothing", "concept-intrinsic-value"],
+    order: 44.3
+  },
+  {
+    id: "concept-boll",
+    type: "concept",
+    title: "BOLL 布林线",
+    period: "技术面指标",
+    school: "指标辅助工具",
+    summary: "BOLL 用均线和标准差形成价格通道，帮助观察波动区间和情绪极端，但不说明内在价值。",
+    coreIdeas: ["布林线", "波动区间", "标准差", "情绪极端"],
+    books: ["《聪明的投资者》"],
+    aShareNotes: [
+      "BOLL 可作为观察价格波动是否偏离近期常态的工具，但不能替代安全边际计算。",
+      "A 股急涨急跌时，突破上轨或下轨可能只是情绪和流动性变化。",
+      "价值投资者使用 BOLL 时，应把它当作提醒：现在市场情绪是否需要更谨慎。"
+    ],
+    misunderstandings: [
+      "触及下轨就一定反弹。",
+      "突破上轨就一定继续上涨。",
+      "把波动区间当成价值区间。"
+    ],
+    practiceActions: [
+      "记录价格触及 BOLL 上下轨时，公司基本面是否发生变化。",
+      "把 BOLL 信号和估值区间、安全边际一起看。",
+      "用 BOLL 观察情绪，不用它替代最终判断。"
+    ],
+    relatedIds: ["concept-market-mr", "concept-margin-of-safety", "concept-do-nothing"],
+    order: 44.4
+  },
+  {
+    id: "concept-rsi",
+    type: "concept",
+    title: "RSI",
+    period: "技术面指标",
+    school: "指标辅助工具",
+    summary: "RSI 衡量一段时间内上涨和下跌力量的相对强弱，常被用来观察超买或超卖状态。",
+    coreIdeas: ["RSI", "相对强弱", "超买超卖", "情绪温度计"],
+    books: ["《聪明的投资者》"],
+    aShareNotes: [
+      "RSI 可以作为情绪温度计，提醒价格短期是否过热或过冷。",
+      "对价值投资来说，RSI 不能回答公司值多少钱，只能辅助观察市场情绪。",
+      "A 股题材行情中 RSI 可能长期高位或低位，不能机械使用阈值。"
+    ],
+    misunderstandings: [
+      "RSI 低就一定可以买。",
+      "RSI 高就一定要卖。",
+      "把情绪指标当作估值指标。"
+    ],
+    practiceActions: [
+      "当 RSI 极端时，写下市场情绪和基本面事实分别是什么。",
+      "把 RSI 与估值区间、风险清单结合，而不是单独行动。",
+      "观察 RSI 背离时，检查是否有基本面变化支撑。"
+    ],
+    relatedIds: ["concept-market-mr", "concept-do-nothing", "concept-good-company-good-price"],
+    order: 44.5
+  },
+  {
+    id: "concept-macd",
+    type: "concept",
+    title: "MACD",
+    period: "技术面指标",
+    school: "指标辅助工具",
+    summary: "MACD 用快慢均线差观察趋势动能变化，适合看市场动量，但它仍然是价格历史的加工结果。",
+    coreIdeas: ["MACD", "趋势动能", "快慢均线", "背离"],
+    books: ["《聪明的投资者》"],
+    aShareNotes: [
+      "MACD 可以帮助观察价格趋势是否增强或减弱，但不能证明公司价值变化。",
+      "价值投资者更适合把 MACD 当作市场先生情绪变化的记录工具。",
+      "A 股震荡市里 MACD 容易频繁给出噪音，必须避免信号交易化。"
+    ],
+    misunderstandings: [
+      "金叉就是买入信号。",
+      "死叉就是卖出信号。",
+      "指标背离一定会马上反转。"
+    ],
+    practiceActions: [
+      "看到金叉或死叉时，先问公司基本面和估值是否变化。",
+      "把 MACD 背离记录为观察项，而不是决策结论。",
+      "用复盘检查技术信号是否曾让自己偏离投资原则。"
+    ],
+    relatedIds: ["concept-market-mr", "concept-do-nothing", "concept-margin-of-safety"],
+    order: 44.6
+  },
+  {
+    id: "concept-kdj",
+    type: "concept",
+    title: "KDJ",
+    period: "技术面指标",
+    school: "指标辅助工具",
+    summary: "KDJ 用最高价、最低价和收盘价关系观察短期价格位置，常用于识别短线强弱和情绪波动。",
+    coreIdeas: ["KDJ", "随机指标", "短期强弱", "钝化"],
+    books: ["《聪明的投资者》"],
+    aShareNotes: [
+      "KDJ 对短期波动敏感，适合观察市场情绪，不适合作为价值投资核心判断。",
+      "A 股强趋势行情中 KDJ 可能钝化，短线信号容易误导长期研究。",
+      "使用 KDJ 时要明确：它只能回答短期价格位置，不能回答企业长期价值。"
+    ],
+    misunderstandings: [
+      "KDJ 低位就一定有安全边际。",
+      "KDJ 高位就代表公司不值得持有。",
+      "用短期指标替代长期研究。"
+    ],
+    practiceActions: [
+      "把 KDJ 信号和自己的投资周期写清楚，避免短线指标干扰长期判断。",
+      "当 KDJ 极端时，检查估值、现金流和风险清单是否支持行动。",
+      "复盘一次自己被短期指标影响的决策。"
+    ],
+    relatedIds: ["concept-market-mr", "concept-do-nothing", "concept-circle-of-competence"],
+    order: 44.7
+  },
+  {
     id: "case-baijiu-consumer",
     type: "case",
     title: "白酒消费公司案例",
