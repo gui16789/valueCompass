@@ -52,6 +52,8 @@ export function AShareCasePanel({ caseStudy }: AShareCasePanelProps) {
         <ListBlock title="风险提醒" items={caseStudy.riskReminders} />
       </div>
 
+      {caseStudy.researchDossier ? <ResearchDossier caseStudy={caseStudy} /> : null}
+
       {walkthrough ? <ValuationWalkthrough caseStudy={caseStudy} /> : null}
 
       <div className="mt-5 rounded-md border border-border bg-background p-4">
@@ -85,6 +87,47 @@ export function AShareCasePanel({ caseStudy }: AShareCasePanelProps) {
         </Link>
       </div>
     </div>
+  );
+}
+
+function ResearchDossier({ caseStudy }: { caseStudy: AShareCaseStudy }) {
+  const dossier = caseStudy.researchDossier;
+
+  if (!dossier) {
+    return null;
+  }
+
+  return (
+    <section className="mt-6 rounded-lg border border-border bg-background p-5">
+      <div className="flex items-center gap-2 text-sm font-semibold text-primary">
+        <FileSearch className="h-4 w-4" aria-hidden />
+        标准化研究档案
+      </div>
+      <h3 className="mt-2 text-lg font-semibold">{caseStudy.companyName} 研究档案</h3>
+      <p className="mt-2 text-sm leading-6 text-muted-foreground">{dossier.boundaryNote}</p>
+      <div className="mt-4 grid gap-3 xl:grid-cols-2">
+        {dossier.sections.map((section, index) => (
+          <details
+            key={section.title}
+            className="rounded-md border border-border bg-card p-4 open:bg-card"
+            open={index < 4}
+          >
+            <summary className="cursor-pointer text-sm font-semibold text-foreground">
+              {section.title}
+            </summary>
+            <p className="mt-3 text-sm leading-6 text-muted-foreground">{section.summary}</p>
+            <div className="mt-3 space-y-2">
+              {section.items.map((item) => (
+                <div key={item} className="flex gap-2 text-sm leading-6 text-muted-foreground">
+                  <CheckCircle2 className="mt-1 h-4 w-4 shrink-0 text-primary" aria-hidden />
+                  <span>{item}</span>
+                </div>
+              ))}
+            </div>
+          </details>
+        ))}
+      </div>
+    </section>
   );
 }
 
