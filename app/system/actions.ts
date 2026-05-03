@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { eq } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "@/db/client";
 import { checklistRuns, customChecklistTemplates, decisions, investmentPrinciples } from "@/db/schema";
@@ -57,6 +57,24 @@ function statusRedirect(status: string, message: string): never {
   redirect(`/system?status=${encodeURIComponent(status)}&message=${encodeURIComponent(message)}`);
 }
 
+function principleValuesChanged(
+  current: typeof investmentPrinciples.$inferSelect,
+  next: Omit<z.infer<typeof principleSchema>, "principleId">
+) {
+  return (
+    current.title !== next.title ||
+    current.circleOfCompetence !== next.circleOfCompetence ||
+    current.excludedIndustries !== next.excludedIndustries ||
+    current.minimumFinancialQuality !== next.minimumFinancialQuality ||
+    current.minimumMarginOfSafety !== next.minimumMarginOfSafety ||
+    current.positionRules !== next.positionRules ||
+    current.buyRules !== next.buyRules ||
+    current.sellRules !== next.sellRules ||
+    current.doNothingRules !== next.doNothingRules ||
+    current.riskRules !== next.riskRules
+  );
+}
+
 export async function saveInvestmentPrinciple(formData: FormData) {
   const parsed = principleSchema.safeParse({
     principleId: String(formData.get("principleId") ?? "").trim() || undefined,
@@ -80,16 +98,58 @@ export async function saveInvestmentPrinciple(formData: FormData) {
 
   if (parsed.data.principleId) {
     const { principleId, ...values } = parsed.data;
+    const [currentPrinciple] = await db
+      .select()
+      .from(investmentPrinciples)
+      .where(eq(investmentPrinciples.id, principleId))
+      .limit(1);
+
+    if (!currentPrinciple) {
+      statusRedirect("error", "未找到要更新的投资原则。");
+    }
+
+    if (!principleValuesChanged(currentPrinciple, values)) {
+      statusRedirect("success", `投资原则未变化，仍为 v${currentPrinciple.version}。`);
+    }
+
     await db
       .update(investmentPrinciples)
       .set({
-        ...values,
-        version: 1,
-        active: true,
-        updatedAt
+        active: false
       })
-      .where(eq(investmentPrinciples.id, principleId));
+      .where(eq(investmentPrinciples.active, true));
+
+    await db.insert(investmentPrinciples).values({
+      id: crypto.randomUUID(),
+      title: values.title,
+      circleOfCompetence: values.circleOfCompetence,
+      excludedIndustries: values.excludedIndustries,
+      minimumFinancialQuality: values.minimumFinancialQuality,
+      minimumMarginOfSafety: values.minimumMarginOfSafety,
+      positionRules: values.positionRules,
+      buyRules: values.buyRules,
+      sellRules: values.sellRules,
+      doNothingRules: values.doNothingRules,
+      riskRules: values.riskRules,
+      version: currentPrinciple.version + 1,
+      active: true,
+      createdAt: updatedAt,
+      updatedAt
+    });
   } else {
+    const [latestPrinciple] = await db
+      .select()
+      .from(investmentPrinciples)
+      .orderBy(desc(investmentPrinciples.version), desc(investmentPrinciples.createdAt))
+      .limit(1);
+
+    await db
+      .update(investmentPrinciples)
+      .set({
+        active: false
+      })
+      .where(eq(investmentPrinciples.active, true));
+
     await db.insert(investmentPrinciples).values({
       id: crypto.randomUUID(),
       title: parsed.data.title,
@@ -102,7 +162,7 @@ export async function saveInvestmentPrinciple(formData: FormData) {
       sellRules: parsed.data.sellRules,
       doNothingRules: parsed.data.doNothingRules,
       riskRules: parsed.data.riskRules,
-      version: 1,
+      version: latestPrinciple ? latestPrinciple.version + 1 : 1,
       active: true,
       createdAt: updatedAt,
       updatedAt
@@ -110,7 +170,7 @@ export async function saveInvestmentPrinciple(formData: FormData) {
   }
 
   revalidatePath("/system");
-  statusRedirect("success", "投资原则已保存。");
+  statusRedirect("success", "投资原则已保存为新版本。");
 }
 
 export async function saveChecklistRun(formData: FormData) {
