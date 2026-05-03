@@ -5,9 +5,13 @@ import { useMemo, useState } from "react";
 import { ArrowRight, BookOpen, CheckCircle2, Circle, Map, Milestone } from "lucide-react";
 import type { KnowledgeNode, KnowledgeNodeType } from "@/lib/learning/nodes";
 import { nodeTypeLabels } from "@/lib/learning/nodes";
+import type { LearningProgressRow } from "@/lib/learning/progress";
+import type { LearningStatus } from "@/lib/learning/status";
+import { learningStatusLabels } from "@/lib/learning/status";
 
 type LearningMapProps = {
   nodes: KnowledgeNode[];
+  progressByNodeId: Record<string, LearningProgressRow>;
 };
 
 const filters: Array<{ value: "all" | KnowledgeNodeType; label: string }> = [
@@ -20,7 +24,7 @@ const filters: Array<{ value: "all" | KnowledgeNodeType; label: string }> = [
   { value: "case", label: "A 股案例" }
 ];
 
-export function LearningMap({ nodes }: LearningMapProps) {
+export function LearningMap({ nodes, progressByNodeId }: LearningMapProps) {
   const [activeType, setActiveType] = useState<"all" | KnowledgeNodeType>("all");
   const timelineNodes = nodes.filter((node) => node.type === "timeline");
   const schoolNodes = nodes.filter((node) => node.type === "school");
@@ -28,7 +32,8 @@ export function LearningMap({ nodes }: LearningMapProps) {
     () => (activeType === "all" ? nodes : nodes.filter((node) => node.type === activeType)),
     [activeType, nodes]
   );
-  const learnedCount = 0;
+  const learnedCount = nodes.filter((node) => progressByNodeId[node.id]?.status === "completed").length;
+  const inProgressCount = nodes.filter((node) => progressByNodeId[node.id]?.status === "in_progress").length;
 
   return (
     <div className="space-y-8">
@@ -46,7 +51,7 @@ export function LearningMap({ nodes }: LearningMapProps) {
           <div className="grid grid-cols-3 gap-2 rounded-lg border border-border bg-background p-3 text-center">
             <Metric label="节点" value={nodes.length} />
             <Metric label="已学" value={learnedCount} />
-            <Metric label="案例" value={nodes.filter((node) => node.type === "case").length} />
+            <Metric label="学习中" value={inProgressCount} />
           </div>
         </div>
       </section>
@@ -66,6 +71,7 @@ export function LearningMap({ nodes }: LearningMapProps) {
               >
                 <div className="text-xs font-semibold text-muted-foreground">{node.period}</div>
                 <div className="mt-3 min-h-12 text-sm font-semibold leading-6">{node.title}</div>
+                <StatusBadge status={getNodeStatus(progressByNodeId[node.id])} />
                 <div className="mt-3 flex items-center justify-between">
                   <span className="text-xs text-muted-foreground">0{index + 1}</span>
                   {index < timelineNodes.length - 1 ? (
@@ -95,6 +101,7 @@ export function LearningMap({ nodes }: LearningMapProps) {
               <div className="text-xs font-semibold text-primary">{node.school}</div>
               <h3 className="mt-2 font-semibold">{node.title}</h3>
               <p className="mt-2 line-clamp-3 text-sm leading-6 text-muted-foreground">{node.summary}</p>
+              <StatusBadge status={getNodeStatus(progressByNodeId[node.id])} />
             </Link>
           ))}
         </div>
@@ -125,7 +132,7 @@ export function LearningMap({ nodes }: LearningMapProps) {
         </div>
         <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
           {filteredNodes.map((node) => (
-            <KnowledgeCard key={node.id} node={node} />
+            <KnowledgeCard key={node.id} node={node} status={getNodeStatus(progressByNodeId[node.id])} />
           ))}
         </div>
       </section>
@@ -133,7 +140,9 @@ export function LearningMap({ nodes }: LearningMapProps) {
   );
 }
 
-function KnowledgeCard({ node }: { node: KnowledgeNode }) {
+function KnowledgeCard({ node, status }: { node: KnowledgeNode; status: LearningStatus }) {
+  const completed = status === "completed";
+
   return (
     <Link
       href={`/learn/${node.id}`}
@@ -144,9 +153,14 @@ function KnowledgeCard({ node }: { node: KnowledgeNode }) {
           <div className="text-xs font-semibold text-primary">{nodeTypeLabels[node.type]}</div>
           <h3 className="mt-2 font-semibold">{node.title}</h3>
         </div>
-        <Circle className="mt-1 h-4 w-4 text-muted-foreground" aria-hidden />
+        {completed ? (
+          <CheckCircle2 className="mt-1 h-4 w-4 text-primary" aria-hidden />
+        ) : (
+          <Circle className="mt-1 h-4 w-4 text-muted-foreground" aria-hidden />
+        )}
       </div>
       <p className="mt-3 line-clamp-3 text-sm leading-6 text-muted-foreground">{node.summary}</p>
+      <StatusBadge status={status} />
       <div className="mt-4 flex flex-wrap gap-2">
         {node.coreIdeas.slice(0, 3).map((idea) => (
           <span key={idea} className="rounded-md border border-border bg-card px-2 py-1 text-xs text-muted-foreground">
@@ -155,6 +169,33 @@ function KnowledgeCard({ node }: { node: KnowledgeNode }) {
         ))}
       </div>
     </Link>
+  );
+}
+
+function getNodeStatus(progress?: LearningProgressRow): LearningStatus {
+  if (progress?.status === "completed" || progress?.status === "in_progress") {
+    return progress.status;
+  }
+
+  return "not_started";
+}
+
+function StatusBadge({ status }: { status: LearningStatus }) {
+  const completed = status === "completed";
+  const inProgress = status === "in_progress";
+
+  return (
+    <span
+      className={`mt-3 inline-flex rounded-md border px-2 py-1 text-xs font-semibold ${
+        completed
+          ? "border-primary bg-muted text-primary"
+          : inProgress
+            ? "border-border bg-card text-foreground"
+            : "border-border bg-card text-muted-foreground"
+      }`}
+    >
+      {learningStatusLabels[status]}
+    </span>
   );
 }
 

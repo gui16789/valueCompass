@@ -1,13 +1,28 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
-import { Bot, CheckCircle2, CircleAlert, RotateCcw, Trophy } from "lucide-react";
+import { useMemo, useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
+import { Bot, CheckCircle2, CircleAlert, History, RotateCcw, Trophy } from "lucide-react";
 import type { TrainingQuestion, TrainingQuestionType } from "@/lib/training/questions";
 import { questionTypeLabels } from "@/lib/training/questions";
+import type { TrainingResultRow } from "@/lib/learning/progress";
 
 type TrainingArenaProps = {
   questions: TrainingQuestion[];
+  recentResults: TrainingResultRow[];
+  onSaveResult: (input: TrainingResultPayload) => Promise<void>;
+};
+
+type TrainingResultPayload = {
+  questionSet: string[];
+  answers: Record<string, string>;
+  weakTopics: string[];
+  answeredCount: number;
+  correctCount: number;
+  score: number;
+  reviewAdvice: string;
+  examinerPrompt: string;
 };
 
 const filters: Array<{ value: "all" | TrainingQuestionType; label: string }> = [
@@ -17,10 +32,13 @@ const filters: Array<{ value: "all" | TrainingQuestionType; label: string }> = [
   { value: "case", label: "案例题" }
 ];
 
-export function TrainingArena({ questions }: TrainingArenaProps) {
+export function TrainingArena({ questions, recentResults, onSaveResult }: TrainingArenaProps) {
+  const router = useRouter();
   const [activeType, setActiveType] = useState<"all" | TrainingQuestionType>("all");
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [submitted, setSubmitted] = useState(false);
+  const [savedSignature, setSavedSignature] = useState("");
+  const [isSaving, startSaving] = useTransition();
   const visibleQuestions = useMemo(
     () => (activeType === "all" ? questions : questions.filter((question) => question.type === activeType)),
     [activeType, questions]
@@ -50,12 +68,49 @@ export function TrainingArena({ questions }: TrainingArenaProps) {
   function reset() {
     setAnswers({});
     setSubmitted(false);
+    setSavedSignature("");
   }
 
   const weakQuestions = submitted
-    ? questions.filter((question) => answers[question.id] !== question.correctOptionId)
+    ? questions.filter((question) => answers[question.id] && answers[question.id] !== question.correctOptionId)
     : [];
+  const weakTopics = useMemo(
+    () =>
+      Array.from(
+        new Set(
+          questions
+            .filter((question) => answers[question.id] && answers[question.id] !== question.correctOptionId)
+            .map((question) => question.topic)
+        )
+      ),
+    [answers, questions]
+  );
+  const reviewAdvice = getScoreAdvice(result.score);
   const examinerDraft = buildExaminerDraft(questions, answers);
+
+  function submitTraining() {
+    setSubmitted(true);
+
+    const signature = JSON.stringify(answers);
+    if (result.answered === 0 || signature === savedSignature) {
+      return;
+    }
+
+    startSaving(async () => {
+      await onSaveResult({
+        questionSet: questions.map((question) => question.id),
+        answers,
+        weakTopics,
+        answeredCount: result.answered,
+        correctCount: result.correct,
+        score: result.score,
+        reviewAdvice,
+        examinerPrompt: examinerDraft
+      });
+      setSavedSignature(signature);
+      router.refresh();
+    });
+  }
 
   return (
     <main className="space-y-8">
@@ -97,12 +152,12 @@ export function TrainingArena({ questions }: TrainingArenaProps) {
           <div className="flex flex-wrap gap-2">
             <button
               type="button"
-              onClick={() => setSubmitted(true)}
+              onClick={submitTraining}
               disabled={result.answered === 0}
               className="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition hover:opacity-90 disabled:opacity-50"
             >
               <Trophy className="h-4 w-4" aria-hidden />
-              提交测验
+              {isSaving ? "保存中" : "提交测验"}
             </button>
             <button
               type="button"
@@ -141,6 +196,8 @@ export function TrainingArena({ questions }: TrainingArenaProps) {
         </section>
       ) : null}
 
+      <RecentResultsPanel results={recentResults} />
+
       <section className="grid gap-4">
         {visibleQuestions.map((question, index) => (
           <QuestionCard
@@ -155,6 +212,64 @@ export function TrainingArena({ questions }: TrainingArenaProps) {
       </section>
     </main>
   );
+}
+
+function RecentResultsPanel({ results }: { results: TrainingResultRow[] }) {
+  return (
+    <section className="rounded-lg border border-border bg-card p-5">
+      <div className="flex items-center gap-2">
+        <History className="h-5 w-5 text-primary" aria-hidden />
+        <h2 className="text-xl font-semibold">最近训练</h2>
+      </div>
+      {results.length === 0 ? (
+        <p className="mt-3 text-sm leading-6 text-muted-foreground">
+          还没有训练记录。完成一次测验后，这里会保留得分、薄弱主题和复习建议。
+        </p>
+      ) : (
+        <div className="mt-4 grid gap-3">
+          {results.map((result) => {
+            const weakTopics = parseStringArray(result.weakTopicsJson);
+            return (
+              <div key={result.id} className="rounded-lg border border-border bg-background p-4">
+                <div className="flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
+                  <div className="font-semibold">
+                    得分 {result.score}% · 答对 {result.correctCount}/{result.answeredCount}
+                  </div>
+                  <div className="text-xs text-muted-foreground">{formatDateTime(result.createdAt)}</div>
+                </div>
+                <p className="mt-2 text-sm leading-6 text-muted-foreground">{result.reviewAdvice}</p>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {(weakTopics.length > 0 ? weakTopics : ["暂无明显薄弱主题"]).map((topic) => (
+                    <span key={topic} className="rounded-md border border-border bg-card px-2 py-1 text-xs text-muted-foreground">
+                      {topic}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </section>
+  );
+}
+
+function parseStringArray(value: string) {
+  try {
+    const parsed = JSON.parse(value);
+    return Array.isArray(parsed) ? parsed.filter((item): item is string => typeof item === "string") : [];
+  } catch {
+    return [];
+  }
+}
+
+function formatDateTime(value: string) {
+  return new Intl.DateTimeFormat("zh-CN", {
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit"
+  }).format(new Date(value));
 }
 
 function QuestionCard({

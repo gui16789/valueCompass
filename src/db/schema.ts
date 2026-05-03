@@ -66,6 +66,30 @@ export const knowledgeNodes = sqliteTable("knowledge_nodes", {
   updatedAt: text("updated_at").notNull()
 });
 
+export const learningProgress = sqliteTable("learning_progress", {
+  id: text("id").primaryKey(),
+  nodeId: text("node_id").notNull(),
+  status: text("status").notNull().default("not_started"),
+  masteryScore: integer("mastery_score").notNull().default(0),
+  notes: text("notes").notNull().default(""),
+  completedAt: text("completed_at"),
+  createdAt: text("created_at").notNull(),
+  updatedAt: text("updated_at").notNull()
+});
+
+export const trainingResults = sqliteTable("training_results", {
+  id: text("id").primaryKey(),
+  questionSetJson: text("question_set_json").notNull().default("[]"),
+  answersJson: text("answers_json").notNull().default("{}"),
+  weakTopicsJson: text("weak_topics_json").notNull().default("[]"),
+  answeredCount: integer("answered_count").notNull().default(0),
+  correctCount: integer("correct_count").notNull().default(0),
+  score: integer("score").notNull().default(0),
+  reviewAdvice: text("review_advice").notNull().default(""),
+  examinerPrompt: text("examiner_prompt").notNull().default(""),
+  createdAt: text("created_at").notNull()
+});
+
 export const companies = sqliteTable("companies", {
   id: text("id").primaryKey(),
   stockCode: text("stock_code").notNull(),

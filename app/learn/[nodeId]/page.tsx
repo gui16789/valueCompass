@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { ArrowLeft, Bot, CheckCircle2 } from "lucide-react";
 import { BookInsightPanel } from "@/components/learning/book-insight-panel";
 import { CoreIdeaPanel } from "@/components/learning/core-idea-panel";
+import { PendingButton } from "@/components/ui/pending-button";
 import { getBookInsight } from "@/lib/learning/book-insights";
 import {
   getKnowledgeNode,
@@ -10,6 +11,9 @@ import {
   knowledgeNodes,
   nodeTypeLabels
 } from "@/lib/learning/nodes";
+import { getLearningProgressByNodeId } from "@/lib/learning/progress";
+import { learningStatusLabels, type LearningStatus } from "@/lib/learning/status";
+import { updateLearningStatus } from "../actions";
 
 type NodeDetailPageProps = {
   params: Promise<{
@@ -17,11 +21,7 @@ type NodeDetailPageProps = {
   }>;
 };
 
-export function generateStaticParams() {
-  return knowledgeNodes.map((node) => ({
-    nodeId: node.id
-  }));
-}
+export const dynamic = "force-dynamic";
 
 export default async function NodeDetailPage({ params }: NodeDetailPageProps) {
   const { nodeId } = await params;
@@ -33,6 +33,8 @@ export default async function NodeDetailPage({ params }: NodeDetailPageProps) {
 
   const relatedNodes = getRelatedNodes(node);
   const bookInsight = node.type === "book" ? getBookInsight(node.id) : null;
+  const progressByNodeId = await getLearningProgressByNodeId();
+  const status = getLearningStatus(progressByNodeId[node.id]?.status);
   const mentorDraft = `请用通俗语言解释「${node.title}」，并结合 A 股价值投资实践举一个不构成投资建议的例子。`;
 
   return (
@@ -77,6 +79,8 @@ export default async function NodeDetailPage({ params }: NodeDetailPageProps) {
         </div>
 
         <aside className="space-y-6">
+          <LearningStatusPanel nodeId={node.id} status={status} />
+
           <div className="rounded-lg border border-border bg-card p-5">
             <h2 className="font-semibold">经典书籍</h2>
             <div className="mt-3 space-y-2">
@@ -106,6 +110,49 @@ export default async function NodeDetailPage({ params }: NodeDetailPageProps) {
         </aside>
       </section>
     </main>
+  );
+}
+
+function getLearningStatus(status?: string): LearningStatus {
+  if (status === "completed" || status === "in_progress") {
+    return status;
+  }
+
+  return "not_started";
+}
+
+function LearningStatusPanel({ nodeId, status }: { nodeId: string; status: LearningStatus }) {
+  const actions: Array<{ status: LearningStatus; label: string; pending: string }> = [
+    { status: "in_progress", label: "标记学习中", pending: "保存中" },
+    { status: "completed", label: "标记已学完", pending: "保存中" },
+    { status: "not_started", label: "重置状态", pending: "重置中" }
+  ];
+
+  return (
+    <div className="rounded-lg border border-border bg-card p-5">
+      <h2 className="font-semibold">学习状态</h2>
+      <div className="mt-3 rounded-md border border-border bg-background px-3 py-2 text-sm">
+        当前：<span className="font-semibold text-primary">{learningStatusLabels[status]}</span>
+      </div>
+      <div className="mt-3 grid gap-2">
+        {actions.map((item) => (
+          <form key={item.status} action={updateLearningStatus}>
+            <input type="hidden" name="nodeId" value={nodeId} />
+            <input type="hidden" name="status" value={item.status} />
+            <PendingButton
+              pendingChildren={item.pending}
+              disabled={status === item.status}
+              className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm font-semibold transition hover:bg-muted disabled:opacity-50"
+            >
+              {item.label}
+            </PendingButton>
+          </form>
+        ))}
+      </div>
+      <p className="mt-3 text-xs leading-5 text-muted-foreground">
+        状态会保存到本地数据库，用来计算学习地图进度和后续复习建议。
+      </p>
+    </div>
   );
 }
 
