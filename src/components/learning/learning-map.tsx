@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { ArrowRight, BookOpen, CheckCircle2, Circle, Map, Milestone } from "lucide-react";
+import { ArrowRight, BookOpen, Building2, CheckCircle2, Circle, Map, Milestone } from "lucide-react";
+import { featuredAShareCaseIds, getAShareCaseStudy } from "@/lib/learning/a-share-cases";
 import type { KnowledgeNode, KnowledgeNodeType } from "@/lib/learning/nodes";
 import { nodeTypeLabels } from "@/lib/learning/nodes";
 import type { LearningProgressRow } from "@/lib/learning/progress";
@@ -28,6 +29,9 @@ export function LearningMap({ nodes, progressByNodeId }: LearningMapProps) {
   const [activeType, setActiveType] = useState<"all" | KnowledgeNodeType>("all");
   const timelineNodes = nodes.filter((node) => node.type === "timeline");
   const schoolNodes = nodes.filter((node) => node.type === "school");
+  const featuredCaseNodes = featuredAShareCaseIds
+    .map((id) => nodes.find((node) => node.id === id))
+    .filter((node): node is KnowledgeNode => Boolean(node));
   const filteredNodes = useMemo(
     () => (activeType === "all" ? nodes : nodes.filter((node) => node.type === activeType)),
     [activeType, nodes]
@@ -53,6 +57,49 @@ export function LearningMap({ nodes, progressByNodeId }: LearningMapProps) {
             <Metric label="已学" value={learnedCount} />
             <Metric label="学习中" value={inProgressCount} />
           </div>
+        </div>
+      </section>
+
+      <section className="rounded-lg border border-border bg-card p-6">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          <div className="flex items-center gap-2">
+            <Building2 className="h-5 w-5 text-primary" aria-hidden />
+            <h2 className="text-xl font-semibold">真实 A 股案例库</h2>
+          </div>
+          <p className="max-w-2xl text-sm leading-6 text-muted-foreground">
+            用真实公司训练行业模板、证据清单和反方问题。案例只用于学习研究框架，不构成具体证券建议。
+          </p>
+        </div>
+        <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+          {featuredCaseNodes.map((node) => {
+            const caseStudy = getAShareCaseStudy(node.id);
+
+            return (
+              <Link
+                key={node.id}
+                href={`/learn/${node.id}`}
+                className="rounded-lg border border-border bg-background p-4 transition hover:border-primary hover:bg-muted"
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <div className="text-xs font-semibold text-primary">
+                      {caseStudy ? `${caseStudy.companyName} / ${caseStudy.stockCode}` : nodeTypeLabels[node.type]}
+                    </div>
+                    <h3 className="mt-2 font-semibold">{node.title}</h3>
+                  </div>
+                  <StatusBadge status={getNodeStatus(progressByNodeId[node.id])} />
+                </div>
+                <p className="mt-3 line-clamp-3 text-sm leading-6 text-muted-foreground">
+                  {caseStudy?.caseTheme ?? node.summary}
+                </p>
+                {caseStudy ? (
+                  <div className="mt-4 rounded-md border border-border bg-card px-2 py-1 text-xs text-muted-foreground">
+                    {caseStudy.valuationTemplate}
+                  </div>
+                ) : null}
+              </Link>
+            );
+          })}
         </div>
       </section>
 

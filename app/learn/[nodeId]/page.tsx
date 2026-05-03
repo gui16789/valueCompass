@@ -1,9 +1,11 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, Bot, CheckCircle2 } from "lucide-react";
+import { AShareCasePanel } from "@/components/learning/a-share-case-panel";
 import { BookInsightPanel } from "@/components/learning/book-insight-panel";
 import { CoreIdeaPanel } from "@/components/learning/core-idea-panel";
 import { PendingButton } from "@/components/ui/pending-button";
+import { getAShareCaseStudy } from "@/lib/learning/a-share-cases";
 import { getBookInsight } from "@/lib/learning/book-insights";
 import {
   getKnowledgeNode,
@@ -33,6 +35,7 @@ export default async function NodeDetailPage({ params }: NodeDetailPageProps) {
 
   const relatedNodes = getRelatedNodes(node);
   const bookInsight = node.type === "book" ? getBookInsight(node.id) : null;
+  const caseStudy = node.type === "case" ? getAShareCaseStudy(node.id) : null;
   const progressByNodeId = await getLearningProgressByNodeId();
   const status = getLearningStatus(progressByNodeId[node.id]?.status);
   const mentorDraft = `请用通俗语言解释「${node.title}」，并结合 A 股价值投资实践举一个不构成投资建议的例子。`;
@@ -72,6 +75,7 @@ export default async function NodeDetailPage({ params }: NodeDetailPageProps) {
 
       <section className="grid gap-6 xl:grid-cols-[1fr_340px]">
         <div className="space-y-6">
+          {caseStudy ? <AShareCasePanel caseStudy={caseStudy} /> : null}
           {bookInsight ? <BookInsightPanel insight={bookInsight} /> : <CoreIdeaPanel node={node} />}
           <InfoPanel title="A 股适配" items={node.aShareNotes} />
           <InfoPanel title="常见误解" items={node.misunderstandings} />
