@@ -1,5 +1,6 @@
-import { AlertCircle, Bot, CheckCircle2, Download, KeyRound } from "lucide-react";
+import { AlertCircle, Bot, CheckCircle2, Download, KeyRound, Upload } from "lucide-react";
 import {
+  importBackup,
   saveModelProvider,
 } from "./actions";
 import { SectionHeader } from "@/components/ui/section-header";
@@ -127,7 +128,7 @@ export default async function SettingsPage({ searchParams }: SettingsPageProps) 
         <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
           <SectionHeader
             title="本地数据备份"
-            description="导出观察池、估值、原则、检查、决策、复盘和 AI 对话记录。导出文件不包含模型 API Key。"
+            description="导出或导入观察池、估值、原则、检查、决策、复盘、AI 对话和自定义清单。导出文件不包含模型 API Key。"
           />
           <a
             href="/api/export"
@@ -138,8 +139,43 @@ export default async function SettingsPage({ searchParams }: SettingsPageProps) 
           </a>
         </div>
         <p className="mt-3 text-xs leading-5 text-muted-foreground">
-          导出文件可能包含你的研究记录和决策复盘，请保存在你信任的位置。导入恢复功能放在后续版本。
+          导出文件可能包含你的研究记录和决策复盘，请保存在你信任的位置。模型 API Key 不会被导出，也不会从备份导入。
         </p>
+        <form action={importBackup} className="mt-5 space-y-4 rounded-lg border border-border bg-background p-4">
+          <div>
+            <div className="text-sm font-semibold">导入 JSON 备份</div>
+            <p className="mt-2 text-sm leading-6 text-muted-foreground">
+              导入会按 ID 合并数据：同 ID 记录会更新，不存在的记录会新增；本地已有但备份里没有的记录不会被删除。导入前建议先导出当前数据。
+            </p>
+          </div>
+          <label className="block">
+            <span className="text-sm font-semibold">选择备份文件</span>
+            <input
+              name="backupFile"
+              type="file"
+              accept="application/json,.json"
+              className="mt-2 w-full rounded-md border border-border bg-card px-3 py-2 text-sm outline-none transition file:mr-3 file:rounded-md file:border-0 file:bg-primary file:px-3 file:py-1 file:text-sm file:font-semibold file:text-primary-foreground focus:border-primary"
+            />
+          </label>
+          <label className="flex items-start gap-3 rounded-lg border border-border bg-card p-3">
+            <input name="confirmImport" type="checkbox" className="mt-1" />
+            <span className="text-sm leading-6 text-muted-foreground">
+              我已了解导入会修改本地数据库，并会合并/覆盖同 ID 的本地记录；我已按需先导出现有数据。
+            </span>
+          </label>
+          <PendingButton
+            className="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition hover:opacity-90 disabled:opacity-50"
+            pendingChildren={
+              <>
+                <Upload className="h-4 w-4" aria-hidden />
+                导入中...
+              </>
+            }
+          >
+            <Upload className="h-4 w-4" aria-hidden />
+            导入 JSON
+          </PendingButton>
+        </form>
       </section>
     </main>
   );
