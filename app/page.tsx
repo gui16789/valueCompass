@@ -32,6 +32,7 @@ const modules = [
 
 export default function HomePage() {
   const timelineNodes = knowledgeNodes.filter((node) => node.type === "timeline");
+  const timelineMinWidth = Math.max(980, timelineNodes.length * 150);
 
   return (
     <main className="space-y-10">
@@ -51,7 +52,13 @@ export default function HomePage() {
           description="沿着经典学派、关键人物和 A 股本土案例，建立自己的价值投资知识地图。"
         />
         <div className="mt-4 overflow-x-auto pb-2">
-          <div className="grid min-w-[980px] grid-cols-8 gap-3">
+          <div
+            className="grid gap-3"
+            style={{
+              minWidth: `${timelineMinWidth}px`,
+              gridTemplateColumns: `repeat(${timelineNodes.length}, minmax(130px, 1fr))`
+            }}
+          >
             {timelineNodes.map((node, index) => (
               <Link
                 key={node.id}

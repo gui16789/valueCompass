@@ -29,6 +29,7 @@ export function LearningMap({ nodes, progressByNodeId }: LearningMapProps) {
   const [activeType, setActiveType] = useState<"all" | KnowledgeNodeType>("all");
   const timelineNodes = nodes.filter((node) => node.type === "timeline");
   const schoolNodes = nodes.filter((node) => node.type === "school");
+  const timelineMinWidth = Math.max(980, timelineNodes.length * 150);
   const featuredCaseNodes = featuredAShareCaseIds
     .map((id) => nodes.find((node) => node.id === id))
     .filter((node): node is KnowledgeNode => Boolean(node));
@@ -109,7 +110,13 @@ export function LearningMap({ nodes, progressByNodeId }: LearningMapProps) {
           <h2 className="text-xl font-semibold">价值投资时间线</h2>
         </div>
         <div className="mt-5 overflow-x-auto pb-2">
-          <div className="grid min-w-[980px] grid-cols-8 gap-3">
+          <div
+            className="grid gap-3"
+            style={{
+              minWidth: `${timelineMinWidth}px`,
+              gridTemplateColumns: `repeat(${timelineNodes.length}, minmax(130px, 1fr))`
+            }}
+          >
             {timelineNodes.map((node, index) => (
               <Link
                 key={node.id}
@@ -120,7 +127,7 @@ export function LearningMap({ nodes, progressByNodeId }: LearningMapProps) {
                 <div className="mt-3 min-h-12 text-sm font-semibold leading-6">{node.title}</div>
                 <StatusBadge status={getNodeStatus(progressByNodeId[node.id])} />
                 <div className="mt-3 flex items-center justify-between">
-                  <span className="text-xs text-muted-foreground">0{index + 1}</span>
+                  <span className="text-xs text-muted-foreground">{String(index + 1).padStart(2, "0")}</span>
                   {index < timelineNodes.length - 1 ? (
                     <ArrowRight className="h-4 w-4 text-primary transition group-hover:translate-x-1" aria-hidden />
                   ) : (
