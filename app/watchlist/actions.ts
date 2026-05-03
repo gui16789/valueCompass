@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { eq } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "@/db/client";
-import { companies } from "@/db/schema";
+import { companies, companyResearchSources } from "@/db/schema";
 
 const companySchema = z.object({
   stockCode: z.string().trim().min(1, "请填写股票代码"),
@@ -33,6 +33,31 @@ const extractionDraftSchema = z.object({
   thesis: z.string().trim().default(""),
   keyRisks: z.string().trim().default(""),
   nextAction: z.string().trim().default("")
+});
+
+const sourceSchema = z.object({
+  companyId: z.string().trim().min(1),
+  title: z.string().trim().min(1, "请填写资料标题"),
+  sourceType: z.string().trim().default("manual_note"),
+  sourceName: z.string().trim().default(""),
+  sourceDate: z.string().trim().default(""),
+  url: z.string().trim().default(""),
+  excerpt: z.string().trim().default(""),
+  keyPoints: z.string().trim().default(""),
+  verificationStatus: z.string().trim().default("pending"),
+  notes: z.string().trim().default("")
+});
+
+const updateSourceStatusSchema = z.object({
+  sourceId: z.string().trim().min(1),
+  companyId: z.string().trim().min(1),
+  verificationStatus: z.string().trim().min(1)
+});
+
+const archiveSourceSchema = z.object({
+  sourceId: z.string().trim().min(1),
+  companyId: z.string().trim().min(1),
+  confirmArchive: z.literal("on")
 });
 
 function now() {
@@ -109,6 +134,7 @@ export async function updateCompany(formData: FormData) {
     .where(eq(companies.id, companyId));
 
   revalidatePath("/watchlist");
+  revalidatePath(`/watchlist/${companyId}`);
 }
 
 export async function applyExtractionDraft(formData: FormData) {
@@ -138,4 +164,81 @@ export async function applyExtractionDraft(formData: FormData) {
     .where(eq(companies.id, companyId));
 
   revalidatePath("/watchlist");
+  revalidatePath(`/watchlist/${companyId}`);
+}
+
+export async function addResearchSource(formData: FormData) {
+  const parsed = sourceSchema.safeParse({
+    companyId: formData.get("companyId"),
+    title: formData.get("title"),
+    sourceType: formData.get("sourceType"),
+    sourceName: formData.get("sourceName"),
+    sourceDate: formData.get("sourceDate"),
+    url: formData.get("url"),
+    excerpt: formData.get("excerpt"),
+    keyPoints: formData.get("keyPoints"),
+    verificationStatus: formData.get("verificationStatus"),
+    notes: formData.get("notes")
+  });
+
+  if (!parsed.success) {
+    return;
+  }
+
+  const createdAt = now();
+
+  await db.insert(companyResearchSources).values({
+    id: crypto.randomUUID(),
+    ...parsed.data,
+    active: true,
+    createdAt,
+    updatedAt: createdAt
+  });
+
+  revalidatePath("/watchlist");
+  revalidatePath(`/watchlist/${parsed.data.companyId}`);
+}
+
+export async function updateResearchSourceStatus(formData: FormData) {
+  const parsed = updateSourceStatusSchema.safeParse({
+    sourceId: formData.get("sourceId"),
+    companyId: formData.get("companyId"),
+    verificationStatus: formData.get("verificationStatus")
+  });
+
+  if (!parsed.success) {
+    return;
+  }
+
+  await db
+    .update(companyResearchSources)
+    .set({
+      verificationStatus: parsed.data.verificationStatus,
+      updatedAt: now()
+    })
+    .where(eq(companyResearchSources.id, parsed.data.sourceId));
+
+  revalidatePath(`/watchlist/${parsed.data.companyId}`);
+}
+
+export async function archiveResearchSource(formData: FormData) {
+  const parsed = archiveSourceSchema.safeParse({
+    sourceId: formData.get("sourceId"),
+    companyId: formData.get("companyId"),
+    confirmArchive: formData.get("confirmArchive")
+  });
+
+  if (!parsed.success) {
+    return;
+  }
+
+  await db
+    .update(companyResearchSources)
+    .set({
+      active: false,
+      updatedAt: now()
+    })
+    .where(eq(companyResearchSources.id, parsed.data.sourceId));
+
+  revalidatePath(`/watchlist/${parsed.data.companyId}`);
 }

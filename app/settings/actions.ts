@@ -10,6 +10,7 @@ import {
   aiMessages,
   checklistRuns,
   companies,
+  companyResearchSources,
   customChecklistTemplates,
   decisions,
   investmentPrinciples,
@@ -154,6 +155,22 @@ const importPayloadSchema = z.object({
       keyRisks: stringValue,
       nextAction: stringValue,
       description: stringValue,
+      createdAt: stringValue,
+      updatedAt: stringValue
+    })).default([]),
+    companyResearchSources: z.array(z.object({
+      id: z.string().min(1),
+      companyId: z.string().min(1),
+      title: stringValue,
+      sourceType: stringValue.default("manual_note"),
+      sourceName: stringValue,
+      sourceDate: stringValue,
+      url: stringValue,
+      excerpt: stringValue,
+      keyPoints: stringValue,
+      verificationStatus: stringValue.default("pending"),
+      notes: stringValue,
+      active: booleanValue.default(true),
       createdAt: stringValue,
       updatedAt: stringValue
     })).default([]),
@@ -505,6 +522,7 @@ export async function importBackup(formData: FormData) {
     learningProgress: 0,
     trainingResults: 0,
     companies: 0,
+    companyResearchSources: 0,
     investmentPrinciples: 0,
     customChecklistTemplates: 0,
     checklistRuns: 0,
@@ -546,6 +564,7 @@ export async function importBackup(formData: FormData) {
   importedCounts.learningProgress = await upsertRows(learningProgress, data.learningProgress);
   importedCounts.trainingResults = await upsertRows(trainingResults, data.trainingResults);
   importedCounts.companies = await upsertRows(companies, data.companies);
+  importedCounts.companyResearchSources = await upsertRows(companyResearchSources, data.companyResearchSources);
   importedCounts.investmentPrinciples = await upsertRows(investmentPrinciples, data.investmentPrinciples);
   importedCounts.customChecklistTemplates = await upsertRows(customChecklistTemplates, data.customChecklistTemplates);
   importedCounts.checklistRuns = await upsertRows(checklistRuns, data.checklistRuns);
@@ -597,6 +616,7 @@ function formatImportSummary(counts: Record<string, number>) {
     learningProgress: "学习进度",
     trainingResults: "训练结果",
     companies: "观察池公司",
+    companyResearchSources: "研究资料",
     investmentPrinciples: "投资原则",
     customChecklistTemplates: "自定义清单",
     checklistRuns: "检查记录",

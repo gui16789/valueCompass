@@ -108,6 +108,25 @@ export const companies = sqliteTable("companies", {
   updatedAt: text("updated_at").notNull()
 });
 
+export const companyResearchSources = sqliteTable("company_research_sources", {
+  id: text("id").primaryKey(),
+  companyId: text("company_id")
+    .notNull()
+    .references(() => companies.id, { onDelete: "cascade" }),
+  title: text("title").notNull(),
+  sourceType: text("source_type").notNull().default("manual_note"),
+  sourceName: text("source_name").notNull().default(""),
+  sourceDate: text("source_date").notNull().default(""),
+  url: text("url").notNull().default(""),
+  excerpt: text("excerpt").notNull().default(""),
+  keyPoints: text("key_points").notNull().default(""),
+  verificationStatus: text("verification_status").notNull().default("pending"),
+  notes: text("notes").notNull().default(""),
+  active: integer("active", { mode: "boolean" }).notNull().default(true),
+  createdAt: text("created_at").notNull(),
+  updatedAt: text("updated_at").notNull()
+});
+
 export const investmentPrinciples = sqliteTable("investment_principles", {
   id: text("id").primaryKey(),
   title: text("title").notNull().default("我的 A 股价值投资原则"),
