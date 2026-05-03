@@ -702,7 +702,7 @@ const rawKnowledgeNodes: KnowledgeNode[] = [
     aShareNotes: ["可观察贵州茅台、五粮液等公开资料中的品牌和渠道特征。", ...sharedBoundary],
     misunderstandings: ["品牌强就能无视价格。"],
     practiceActions: ["比较收入增长、毛利率、渠道库存和现金流。"],
-    relatedIds: ["concept-moat", "concept-good-company-good-price"],
+    relatedIds: ["concept-moat", "concept-good-company-good-price", "case-moutai-600519"],
     order: 45
   },
   {
@@ -717,7 +717,7 @@ const rawKnowledgeNodes: KnowledgeNode[] = [
     aShareNotes: ["可观察招商银行、工商银行等公开披露差异。", ...sharedBoundary],
     misunderstandings: ["银行破净就一定低估。"],
     practiceActions: ["记录 PB、ROE、不良率和拨备覆盖率。"],
-    relatedIds: ["concept-pb-pe", "concept-roe"],
+    relatedIds: ["concept-pb-pe", "concept-roe", "case-cmb-600036"],
     order: 46
   },
   {
@@ -747,7 +747,7 @@ const rawKnowledgeNodes: KnowledgeNode[] = [
     aShareNotes: ["可观察中国神华、陕西煤业等公开数据。", ...sharedBoundary],
     misunderstandings: ["用景气顶点利润给周期股估值。"],
     practiceActions: ["估算悲观、中性、乐观三种商品价格下的利润。"],
-    relatedIds: ["school-contrarian", "concept-pb-pe"],
+    relatedIds: ["school-contrarian", "concept-pb-pe", "case-shenhua-601088"],
     order: 48
   },
   {
@@ -762,7 +762,7 @@ const rawKnowledgeNodes: KnowledgeNode[] = [
     aShareNotes: ["可观察万华化学等公开资料中的周期与竞争优势。", ...sharedBoundary],
     misunderstandings: ["把周期高利润当成常态利润。"],
     practiceActions: ["跟踪产品价差和新增产能。"],
-    relatedIds: ["case-cyclical-coal", "concept-value-trap"],
+    relatedIds: ["case-cyclical-coal", "concept-value-trap", "case-wanhua-600309"],
     order: 49
   },
   {
@@ -777,7 +777,7 @@ const rawKnowledgeNodes: KnowledgeNode[] = [
     aShareNotes: ["可观察美的集团、格力电器等公开资料。", ...sharedBoundary],
     misunderstandings: ["成熟行业没有研究价值。"],
     practiceActions: ["比较自由现金流、分红和再投资需求。"],
-    relatedIds: ["concept-free-cash-flow", "person-peter-lynch"],
+    relatedIds: ["concept-free-cash-flow", "person-peter-lynch", "case-midea-000333"],
     order: 50
   },
   {
@@ -792,7 +792,7 @@ const rawKnowledgeNodes: KnowledgeNode[] = [
     aShareNotes: ["可观察宁德时代、隆基绿能等公开资料。", ...sharedBoundary],
     misunderstandings: ["赛道好等于公司回报好。"],
     practiceActions: ["倒推当前估值隐含的市场份额和利润率。"],
-    relatedIds: ["concept-reverse-dcf", "school-growth-value"],
+    relatedIds: ["concept-reverse-dcf", "school-growth-value", "case-catl-300750", "case-longi-601012"],
     order: 51
   },
   {
@@ -807,8 +807,128 @@ const rawKnowledgeNodes: KnowledgeNode[] = [
     aShareNotes: ["可观察恒瑞医药、百济神州等公开资料。", ...sharedBoundary],
     misunderstandings: ["研发投入越高越好。"],
     practiceActions: ["区分事实披露、研发假设和估值推断。"],
-    relatedIds: ["person-philip-fisher", "concept-margin-of-safety"],
+    relatedIds: ["person-philip-fisher", "concept-margin-of-safety", "case-hengrui-600276"],
     order: 52
+  },
+  {
+    id: "case-midea-000333",
+    type: "case",
+    title: "美的集团案例",
+    period: "A 股真实公司",
+    school: "成熟消费制造",
+    summary: "用美的集团训练成熟制造企业研究：现金流、渠道效率、海外业务、B 端延展和估值模板选择。",
+    coreIdeas: ["自由现金流", "渠道效率", "全球化", "制造业估值"],
+    books: ["《彼得·林奇的成功投资》", "《巴菲特致股东的信》"],
+    aShareNotes: ["适合用制造业模板做主估值，再用消费股模板交叉验证。", ...sharedBoundary],
+    misunderstandings: ["成熟行业没有研究价值；家电龙头只能按消费股 PE 估值。"],
+    practiceActions: ["拆解智能家居、商业及工业解决方案和海外业务对现金流质量的影响。"],
+    relatedIds: ["case-home-appliance", "concept-free-cash-flow", "concept-owner-earnings"],
+    order: 53
+  },
+  {
+    id: "case-moutai-600519",
+    type: "case",
+    title: "贵州茅台案例",
+    period: "A 股真实公司",
+    school: "高端消费",
+    summary: "用贵州茅台训练品牌、渠道、提价能力、高 ROE 和高估值安全边际的边界。",
+    coreIdeas: ["品牌护城河", "渠道秩序", "高 ROE", "估值边界"],
+    books: ["《巴菲特致股东的信》", "《彼得·林奇的成功投资》"],
+    aShareNotes: ["适合研究护城河证据，但必须同时检查估值隐含回报。", ...sharedBoundary],
+    misunderstandings: ["品牌最强就能无视价格；高 ROE 永远不会均值回归。"],
+    practiceActions: ["比较茅台酒、系列酒、直销占比、合同负债和经营现金流。"],
+    relatedIds: ["case-baijiu-consumer", "concept-moat", "concept-good-company-good-price"],
+    order: 54
+  },
+  {
+    id: "case-cmb-600036",
+    type: "case",
+    title: "招商银行案例",
+    period: "A 股真实公司",
+    school: "金融股",
+    summary: "用招商银行训练 PB-ROE、资产质量、净息差、拨备和零售银行护城河研究。",
+    coreIdeas: ["PB-ROE", "资产质量", "拨备覆盖", "零售金融"],
+    books: ["《证券分析》"],
+    aShareNotes: ["适合学习银行不能只看破净，必须结合 ROE 和资产质量。", ...sharedBoundary],
+    misunderstandings: ["银行破净就一定低估；零售优势可以不看周期。"],
+    practiceActions: ["记录 ROE、净息差、不良率、拨备覆盖率和资本充足率的变化。"],
+    relatedIds: ["case-bank", "concept-pb-pe", "concept-roe"],
+    order: 55
+  },
+  {
+    id: "case-shenhua-601088",
+    type: "case",
+    title: "中国神华案例",
+    period: "A 股真实公司",
+    school: "周期股",
+    summary: "用中国神华训练煤电运一体化、周期中枢利润、资本开支和高股息可持续性研究。",
+    coreIdeas: ["中枢利润", "一体化经营", "资本开支", "股息可持续"],
+    books: ["《安全边际》", "《证券分析》"],
+    aShareNotes: ["适合学习周期股不能用景气顶部利润估值。", ...sharedBoundary],
+    misunderstandings: ["高股息可以替代周期判断；资源品利润稳定不需要情景估值。"],
+    practiceActions: ["用煤价悲观、中性、乐观三情景估算利润和现金流。"],
+    relatedIds: ["case-cyclical-coal", "school-contrarian", "concept-pb-pe"],
+    order: 56
+  },
+  {
+    id: "case-wanhua-600309",
+    type: "case",
+    title: "万华化学案例",
+    period: "A 股真实公司",
+    school: "周期制造",
+    summary: "用万华化学训练化工周期、成本优势、产品价差、平台化扩张和资本开支风险。",
+    coreIdeas: ["成本优势", "价差周期", "平台化", "资本开支"],
+    books: ["《证券分析》"],
+    aShareNotes: ["适合学习好公司也会受周期和产能影响。", ...sharedBoundary],
+    misunderstandings: ["龙头化工公司可以直接用高景气利润估值。"],
+    practiceActions: ["跟踪产品价差、在建工程、毛利率和经营现金流。"],
+    relatedIds: ["case-chemical-cycle", "concept-value-trap", "concept-free-cash-flow"],
+    order: 57
+  },
+  {
+    id: "case-catl-300750",
+    type: "case",
+    title: "宁德时代案例",
+    period: "A 股真实公司",
+    school: "成长制造",
+    summary: "用宁德时代训练动力电池、储能、技术迭代、价格竞争和反向 DCF。",
+    coreIdeas: ["技术迭代", "份额", "价格竞争", "反向 DCF"],
+    books: ["《怎样选择成长股》"],
+    aShareNotes: ["适合学习高成长赛道中的竞争、资本开支和估值隐含预期。", ...sharedBoundary],
+    misunderstandings: ["赛道空间大就等于股东回报确定。"],
+    practiceActions: ["倒推当前估值需要的长期出货、毛利率和市场份额。"],
+    relatedIds: ["case-new-energy-manufacturing", "concept-reverse-dcf", "school-growth-value"],
+    order: 58
+  },
+  {
+    id: "case-longi-601012",
+    type: "case",
+    title: "隆基绿能案例",
+    period: "A 股真实公司",
+    school: "新能源周期制造",
+    summary: "用隆基绿能训练光伏产能周期、技术路线、资产减值和价值陷阱排查。",
+    coreIdeas: ["产能周期", "技术路线", "资产减值", "价值陷阱"],
+    books: ["《安全边际》", "《怎样选择成长股》"],
+    aShareNotes: ["适合学习好赛道也可能出现供需错配和利润下行。", ...sharedBoundary],
+    misunderstandings: ["需求长期增长就能抵消短期产能过剩。"],
+    practiceActions: ["检查存货、固定资产、毛利率、现金流和技术路线变化。"],
+    relatedIds: ["case-new-energy-manufacturing", "concept-value-trap", "concept-margin-of-safety"],
+    order: 59
+  },
+  {
+    id: "case-hengrui-600276",
+    type: "case",
+    title: "恒瑞医药案例",
+    period: "A 股真实公司",
+    school: "研发驱动",
+    summary: "用恒瑞医药训练创新药研发投入、临床管线、医保支付、海外授权和估值边界。",
+    coreIdeas: ["研发管线", "商业化", "支付政策", "估值边界"],
+    books: ["《怎样选择成长股》"],
+    aShareNotes: ["适合学习研发投入不是价值本身，要看管线质量和商业化结果。", ...sharedBoundary],
+    misunderstandings: ["研发费用越高越好；创新药估值可以不看现金流。"],
+    practiceActions: ["把研发投入拆成管线阶段、获批产品、商业化和海外授权四类证据。"],
+    relatedIds: ["case-pharma-innovation", "person-philip-fisher", "concept-margin-of-safety"],
+    order: 60
   }
 ];
 
