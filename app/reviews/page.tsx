@@ -1,14 +1,25 @@
 import Link from "next/link";
-import { AlertCircle, Bot, CheckCircle2, History, RotateCcw, ShieldAlert } from "lucide-react";
+import {
+  AlertCircle,
+  Bot,
+  CalendarClock,
+  CheckCircle2,
+  FileText,
+  History,
+  RotateCcw,
+  ShieldAlert
+} from "lucide-react";
 import { PendingButton } from "@/components/ui/pending-button";
 import { SectionHeader } from "@/components/ui/section-header";
 import type { companies, decisions, reviews } from "@/db/schema";
+import { checklistTypes, labelFor as checklistLabelFor } from "@/lib/investment-system/constants";
 import { labelFor, reviewTypes } from "@/lib/reviews/constants";
 import { getReviewsPageData } from "@/lib/reviews/queries";
 import { saveReview } from "./actions";
 
 type ReviewsPageProps = {
   searchParams?: Promise<{
+    decisionId?: string;
     status?: string;
     message?: string;
   }>;
@@ -18,8 +29,11 @@ type Company = typeof companies.$inferSelect;
 type Decision = typeof decisions.$inferSelect;
 type Review = typeof reviews.$inferSelect;
 
+export const dynamic = "force-dynamic";
+
 export default async function ReviewsPage({ searchParams }: ReviewsPageProps) {
-  const paramsPromise: Promise<{ status?: string; message?: string }> = searchParams ?? Promise.resolve({});
+  const paramsPromise: Promise<{ decisionId?: string; status?: string; message?: string }> =
+    searchParams ?? Promise.resolve({});
   const [params, data] = await Promise.all([paramsPromise, getReviewsPageData()]);
 
   return (
@@ -33,7 +47,7 @@ export default async function ReviewsPage({ searchParams }: ReviewsPageProps) {
           <div className="grid grid-cols-3 gap-2 rounded-lg border border-border bg-background p-3 text-center">
             <Metric label="决策" value={data.decisions.length} />
             <Metric label="复盘" value={data.reviews.length} />
-            <Metric label="类型" value={reviewTypes.length} />
+            <Metric label="待复盘" value={data.pendingDecisions.length} />
           </div>
         </div>
       </section>
@@ -42,21 +56,88 @@ export default async function ReviewsPage({ searchParams }: ReviewsPageProps) {
         <StatusBanner status={params.status === "success" ? "success" : "error"} message={params.message} />
       ) : null}
 
+      <PendingReviewDecisions decisions={data.pendingDecisions} />
+
       <section className="grid gap-6 xl:grid-cols-[0.95fr_1.05fr]">
-        <ReviewForm decisions={data.decisions} />
+        <ReviewForm decisions={data.decisions} selectedDecisionId={params.decisionId} />
         <RecentReviews reviews={data.reviews} />
       </section>
     </main>
   );
 }
 
-function ReviewForm({
+function PendingReviewDecisions({
   decisions
 }: {
   decisions: Array<{ decision: Decision; company: Company | null }>;
 }) {
   return (
     <section className="rounded-lg border border-border bg-card p-6">
+      <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+        <div className="flex items-center gap-2">
+          <CalendarClock className="h-5 w-5 text-primary" aria-hidden />
+          <h2 className="text-xl font-semibold">待复盘决策</h2>
+        </div>
+        <p className="max-w-2xl text-sm leading-6 text-muted-foreground">
+          这些决策还没有关联复盘。优先回看关键假设、风险和当时检查项，再记录事实验证结果。
+        </p>
+      </div>
+
+      <div className="mt-5 grid gap-3 lg:grid-cols-2">
+        {decisions.length === 0 ? (
+          <div className="rounded-lg border border-dashed border-border bg-background p-5 text-sm leading-6 text-muted-foreground lg:col-span-2">
+            暂无待复盘决策。新的检查清单生成决策后，会出现在这里。
+          </div>
+        ) : (
+          decisions.map(({ decision, company }) => (
+            <article key={decision.id} className="rounded-lg border border-border bg-background p-4">
+              <div className="flex flex-col gap-2 md:flex-row md:items-start md:justify-between">
+                <div>
+                  <div className="text-sm font-semibold">
+                    {company ? `${company.stockName}（${company.stockCode}）` : "未关联公司"}
+                  </div>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    {decision.decisionDate} / {checklistLabelFor(checklistTypes, decision.decisionType)}
+                  </p>
+                </div>
+                <span className="rounded-full border border-border bg-card px-3 py-1 text-xs font-semibold text-muted-foreground">
+                  未复盘
+                </span>
+              </div>
+              <p className="mt-3 line-clamp-2 text-sm leading-6">{decision.finalUserJudgment}</p>
+              <div className="mt-4 flex flex-wrap gap-2">
+                <Link
+                  href={`/reviews/decisions/${decision.id}`}
+                  className="inline-flex items-center gap-2 rounded-md border border-border bg-card px-3 py-2 text-sm font-semibold transition hover:bg-muted"
+                >
+                  <FileText className="h-4 w-4" aria-hidden />
+                  查看决策详情
+                </Link>
+                <Link
+                  href={`/reviews?decisionId=${decision.id}#review-form`}
+                  className="inline-flex items-center gap-2 rounded-md bg-primary px-3 py-2 text-sm font-semibold text-primary-foreground transition hover:opacity-90"
+                >
+                  <RotateCcw className="h-4 w-4" aria-hidden />
+                  创建复盘
+                </Link>
+              </div>
+            </article>
+          ))
+        )}
+      </div>
+    </section>
+  );
+}
+
+function ReviewForm({
+  decisions,
+  selectedDecisionId
+}: {
+  decisions: Array<{ decision: Decision; company: Company | null }>;
+  selectedDecisionId?: string;
+}) {
+  return (
+    <section id="review-form" className="rounded-lg border border-border bg-card p-6">
       <div className="flex items-center gap-2">
         <RotateCcw className="h-5 w-5 text-primary" aria-hidden />
         <h2 className="text-xl font-semibold">创建复盘</h2>
@@ -71,6 +152,7 @@ function ReviewForm({
             <span className="text-sm font-semibold">关联决策</span>
             <select
               name="decisionId"
+              defaultValue={selectedDecisionId ?? ""}
               className="mt-2 w-full rounded-md border border-border bg-background px-3 py-2 text-sm outline-none transition focus:border-primary"
             >
               <option value="">不关联决策</option>
@@ -183,6 +265,15 @@ function ReviewCard({
       ) : null}
 
       <div className="mt-4 flex flex-wrap gap-2">
+        {decision ? (
+          <Link
+            href={`/reviews/decisions/${decision.id}`}
+            className="inline-flex items-center gap-2 rounded-md border border-border bg-card px-3 py-2 text-sm font-semibold transition hover:bg-muted"
+          >
+            <FileText className="h-4 w-4" aria-hidden />
+            查看决策详情
+          </Link>
+        ) : null}
         <Link
           href={`/mentor?role=mentor&draft=${encodeURIComponent(mentorDraft)}`}
           className="inline-flex items-center gap-2 rounded-md border border-border bg-card px-3 py-2 text-sm font-semibold transition hover:bg-muted"

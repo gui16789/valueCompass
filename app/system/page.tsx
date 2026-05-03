@@ -4,6 +4,7 @@ import {
   Bot,
   CheckCircle2,
   ClipboardCheck,
+  FileText,
   FilePenLine,
   History,
   ShieldAlert
@@ -356,6 +357,13 @@ function DecisionLog({ decisions }: { decisions: Array<{ decision: Decision; com
                   <InfoBlock title="主要风险" value={decision.risks || "未填写"} />
                 </div>
               ) : null}
+              <Link
+                href={`/reviews/decisions/${decision.id}`}
+                className="mt-4 inline-flex items-center gap-2 rounded-md border border-border bg-card px-3 py-2 text-sm font-semibold transition hover:bg-muted"
+              >
+                <FileText className="h-4 w-4" aria-hidden />
+                查看决策详情
+              </Link>
             </article>
           ))
         )}
