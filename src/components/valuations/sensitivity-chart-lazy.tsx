@@ -13,10 +13,23 @@ const SensitivityChart = dynamic(() => import("@/components/valuations/sensitivi
 
 export function SensitivityChartLazy({
   data,
-  currentPrice
+  currentPrice,
+  matrix
 }: {
-  data: Array<{ name: string; valuePerShare: number }>;
+  data: Array<{ name: string; valuePerShare: number; marginOfSafety: number; impliedUpside: number }>;
   currentPrice: number;
+  matrix?: {
+    rowAxisLabel: string;
+    columnAxisLabel: string;
+    rows: string[];
+    columns: string[];
+    cells: Array<{
+      rowLabel: string;
+      columnLabel: string;
+      valuePerShare: number;
+      marginOfSafety: number;
+    }>;
+  };
 }) {
-  return <SensitivityChart data={data} currentPrice={currentPrice} />;
+  return <SensitivityChart data={data} currentPrice={currentPrice} matrix={matrix} />;
 }
