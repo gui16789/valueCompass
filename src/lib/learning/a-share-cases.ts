@@ -19,6 +19,19 @@ export type AShareValuationWalkthrough = {
   dataAsOf: string;
   sourceNote: string;
   boundaryNote: string;
+  methodSelection: Array<{
+    method: string;
+    typicalFormula: string;
+    suitableFor: string;
+    mideaFit: string;
+    decision: string;
+  }>;
+  primaryFormula: {
+    name: string;
+    formula: string;
+    whyPrimary: string;
+    inputExplanation: string[];
+  };
   preferredTools: Array<{
     name: string;
     reason: string;
@@ -35,9 +48,16 @@ export type AShareValuationWalkthrough = {
     name: string;
     assumptions: string[];
     formula: string;
+    formulaSteps: string[];
     equityValueRange: string;
     perShareRange: string;
     interpretation: string;
+  }>;
+  crossChecks: Array<{
+    method: string;
+    formula: string;
+    result: string;
+    lesson: string;
   }>;
   peerComparison: Array<{
     dimension: string;
@@ -90,6 +110,67 @@ const aShareCaseStudies: AShareCaseStudy[] = [
         "示例数据来自美的集团 2025 年年度报告：营业收入 4564.52 亿元，归母净利润 439.45 亿元，经营活动现金流量净额 533.46 亿元，购建固定资产、无形资产和其他长期资产支付现金 111.42 亿元，期末总股本 75.971 亿股。",
       boundaryNote:
         "以下只是价值投资学习中的估值演算样例，不是实时估值，不构成买入、卖出或持有建议。用户应自行更新最新年报、季报、股本和市场价格后再判断。",
+      methodSelection: [
+        {
+          method: "烟蒂股 / 清算价值法",
+          typicalFormula: "保守清算价值 = 现金 + 可变现资产折扣 - 全部负债；再与市值比较",
+          suitableFor:
+            "业务前景一般、资产非常便宜、市场价格显著低于保守净资产，且有资产变现或价值释放线索的公司。",
+          mideaFit:
+            "不适合作为主方法。美的不是困境资产型公司，核心价值来自持续经营现金流、品牌渠道、供应链和资本配置，而不是清算资产。",
+          decision: "排除为主估值法，只保留资产负债表排雷。"
+        },
+        {
+          method: "周期股中枢利润法",
+          typicalFormula: "股权价值 = 跨周期中枢利润 x 合理 PE，或中枢 EBITDA x EV/EBITDA",
+          suitableFor:
+            "煤炭、化工、有色、航运等利润高度随商品价格和产能周期波动的公司。",
+          mideaFit:
+            "不适合作为主方法。美的会受地产、原材料和海外需求影响，但不是利润完全由商品价格决定的强周期公司。",
+          decision: "排除为主估值法，只在风险部分检查原材料和需求周期。"
+        },
+        {
+          method: "高速成长股 DCF / 反向 DCF",
+          typicalFormula: "股权价值 = 未来多年自由现金流折现 + 终值折现；或从当前市值倒推增长率",
+          suitableFor:
+            "仍处于高增长阶段、长期空间大但当前利润未完全反映未来潜力的公司。",
+          mideaFit:
+            "不能作为主方法。美的有第二增长曲线，但整体已是成熟制造龙头，不能把它当纯高成长公司给长期高增速假设。",
+          decision: "作为交叉验证，尤其用于检查市场价格隐含的增长是否过于乐观。"
+        },
+        {
+          method: "消费股 PE 情景法",
+          typicalFormula: "股权价值 = 常态归母净利润 x 合理 PE；每股价值 = 股权价值 / 总股本",
+          suitableFor:
+            "利润稳定、资本开支不重、现金流和净利润长期匹配的消费品牌公司。",
+          mideaFit:
+            "部分适用。美的智能家居主业有消费属性，但还有 B 端、机器人、工业技术和海外业务，单用 PE 容易忽略资本开支与现金流差异。",
+          decision: "作为交叉验证。"
+        },
+        {
+          method: "质量制造 / 所有者收益法",
+          typicalFormula: "股权价值 = 常态所有者收益 x 合理倍数；所有者收益近似 = 经营现金流 - 维护性资本开支",
+          suitableFor:
+            "业务成熟、现金流较好、资本开支可估、分红回购能体现股东回报的制造或消费制造龙头。",
+          mideaFit:
+            "最适合作为主方法。美的的研究重点正是现金流质量、资本开支、分红回购、海外与 B 端增长是否提升长期股东回报。",
+          decision: "选为主估值法。"
+        }
+      ],
+      primaryFormula: {
+        name: "质量制造 / 所有者收益法",
+        formula:
+          "教学股权价值 = 常态自由现金流 x 合理现金流倍数；每股教学价值 = 教学股权价值 / 总股本",
+        whyPrimary:
+          "美的已经不是早期高成长公司，也不是资产清算型烟蒂股。它更像成熟质量制造平台，核心问题是每年能稳定创造多少现金、还需要多少资本开支、这些现金能否通过分红回购和再投资为股东创造价值。",
+        inputExplanation: [
+          "经营现金流：先看公司利润是否真正变成现金，美的 2025 年经营现金流约 533.46 亿元。",
+          "资本开支：制造企业需要持续投入设备、产能和技术，教学口径先用购建固定资产等长期资产支付现金约 111.42 亿元近似。",
+          "自由现金流：533.46 - 111.42 = 422.04 亿元，这是三情景估值的起点。",
+          "合理倍数：倍数不是拍脑袋，而是由增长稳定性、现金流质量、护城河、资本配置、风险和利率环境共同决定。",
+          "总股本：用约 75.971 亿股把股权价值换算成每股教学区间。"
+        ]
+      },
       preferredTools: [
         {
           name: "制造业所有者收益 / 自由现金流估值",
@@ -175,6 +256,14 @@ const aShareCaseStudies: AShareCaseStudy[] = [
             "常态自由现金流按 380-410 亿元估算，合理倍数按 10-12 倍。"
           ],
           formula: "380-410 亿元自由现金流 x 10-12 倍",
+          formulaSteps: [
+            "先把 2025 年教学口径自由现金流 422.04 亿元向下修正到 380-410 亿元，表示需求放缓、利润率承压或资本开支增加。",
+            "再使用 10-12 倍现金流倍数，表示成熟制造龙头估值中枢下移。",
+            "股权价值下限 = 380 x 10 = 3800 亿元。",
+            "股权价值上限 = 410 x 12 = 4920 亿元。",
+            "每股下限 = 3800 / 75.971 = 约 50 元。",
+            "每股上限 = 4920 / 75.971 = 约 65 元。"
+          ],
           equityValueRange: "约 3800-4920 亿元",
           perShareRange: "约 50-65 元 / 股",
           interpretation:
@@ -188,6 +277,14 @@ const aShareCaseStudies: AShareCaseStudy[] = [
             "常态自由现金流按 420-470 亿元估算，合理倍数按 13-15 倍。"
           ],
           formula: "420-470 亿元自由现金流 x 13-15 倍",
+          formulaSteps: [
+            "把 2025 年教学口径自由现金流 422.04 亿元视为接近常态，并给到 420-470 亿元区间。",
+            "使用 13-15 倍现金流倍数，表示成熟龙头现金流稳定，但不假设估值大幅扩张。",
+            "股权价值下限 = 420 x 13 = 5460 亿元。",
+            "股权价值上限 = 470 x 15 = 7050 亿元。",
+            "每股下限 = 5460 / 75.971 = 约 72 元。",
+            "每股上限 = 7050 / 75.971 = 约 93 元。"
+          ],
           equityValueRange: "约 5460-7050 亿元",
           perShareRange: "约 72-93 元 / 股",
           interpretation:
@@ -201,10 +298,41 @@ const aShareCaseStudies: AShareCaseStudy[] = [
             "常态自由现金流按 480-540 亿元估算，合理倍数按 16-18 倍。"
           ],
           formula: "480-540 亿元自由现金流 x 16-18 倍",
+          formulaSteps: [
+            "把常态自由现金流从 422.04 亿元上修到 480-540 亿元，表示海外和 B 端业务持续兑现。",
+            "使用 16-18 倍现金流倍数，表示市场认可更高质量的现金流和更长增长期。",
+            "股权价值下限 = 480 x 16 = 7680 亿元。",
+            "股权价值上限 = 540 x 18 = 9720 亿元。",
+            "每股下限 = 7680 / 75.971 = 约 101 元。",
+            "每股上限 = 9720 / 75.971 = 约 128 元。"
+          ],
           equityValueRange: "约 7680-9720 亿元",
           perShareRange: "约 101-128 元 / 股",
           interpretation:
             "用于检验乐观叙事：必须有海外增长、B 端盈利质量和现金流持续改善的证据支持。"
+        }
+      ],
+      crossChecks: [
+        {
+          method: "PE 情景交叉验证",
+          formula: "股权价值 = 归母净利润 439.45 亿元 x 12-18 倍 PE",
+          result: "约 5273-7910 亿元，对应每股约 69-104 元。",
+          lesson:
+            "PE 结果大致覆盖自由现金流法的中性区间，但低于自由现金流法的乐观上沿，提醒我们乐观情景必须证明现金流还能继续提升。"
+        },
+        {
+          method: "股息和回购验证",
+          formula: "股东回报能力 = 现金分红 + 回购，与归母净利润和自由现金流比较",
+          result: "2025 年度现金分红与股份回购总金额超过当年度归母净利润，说明资本配置是重要研究项。",
+          lesson:
+            "高分红和回购能增强股东回报，但也要检查是否影响再投资、研发和第二增长曲线。"
+        },
+        {
+          method: "反向 DCF 思路",
+          formula: "用当前市值倒推未来自由现金流增长率和终值倍数",
+          result: "页面不使用实时市值计算；用户可把最新市值填入估值工具倒推。",
+          lesson:
+            "如果倒推出的增长率明显高于公司历史现金流和行业增速，就要提高安全边际要求。"
         }
       ],
       peerComparison: [
