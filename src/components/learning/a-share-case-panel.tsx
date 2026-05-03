@@ -116,7 +116,7 @@ function ValuationWalkthrough({ caseStudy }: { caseStudy: AShareCaseStudy }) {
       <div className="rounded-md border border-border bg-card p-4">
         <div className="flex items-center gap-2 text-sm font-semibold text-primary">
           <Scale className="h-4 w-4" aria-hidden />
-          估值方法选择：为什么美的不用烟蒂股或纯成长股公式
+          估值方法选择：为什么 {caseStudy.companyName} 不直接套用单一公式
         </div>
         <div className="mt-3 grid gap-3 xl:grid-cols-2">
           {walkthrough.methodSelection.map((method) => (
@@ -132,7 +132,7 @@ function ValuationWalkthrough({ caseStudy }: { caseStudy: AShareCaseStudy }) {
                   {method.suitableFor}
                 </p>
                 <p>
-                  <span className="font-semibold text-foreground">套到美的：</span>
+                  <span className="font-semibold text-foreground">套到{caseStudy.companyName}：</span>
                   {method.mideaFit}
                 </p>
                 <p>

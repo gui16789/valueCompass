@@ -1466,6 +1466,21 @@ const rawKnowledgeNodes: KnowledgeNode[] = [
     practiceActions: ["把研发投入拆成管线阶段、获批产品、商业化和海外授权四类证据。"],
     relatedIds: ["case-pharma-innovation", "person-philip-fisher", "concept-margin-of-safety"],
     order: 60
+  },
+  {
+    id: "case-huayou-603799",
+    type: "case",
+    title: "华友钴业案例",
+    period: "A 股真实公司",
+    school: "新能源周期制造",
+    summary: "用华友钴业训练新能源金属与材料一体化公司的周期中枢利润、资产负债表压力和估值工具选择。",
+    coreIdeas: ["周期中枢利润", "一体化", "资本开支", "资产负债表"],
+    books: ["《证券分析》", "《安全边际》"],
+    aShareNotes: ["适合学习新能源材料公司不能只按成长股估值，必须同时检查商品价格、产能周期和负债压力。", ...sharedBoundary],
+    misunderstandings: ["新能源赛道好就能直接给成长股倍数；历史高利润可以当作长期常态利润。"],
+    practiceActions: ["用钴、镍、锂、正极材料销量和毛利率拆解三情景中枢利润。"],
+    relatedIds: ["case-new-energy-manufacturing", "case-chemical-cycle", "concept-value-trap", "concept-pb-pe"],
+    order: 61
   }
 ];
 
