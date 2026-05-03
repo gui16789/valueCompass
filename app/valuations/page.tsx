@@ -5,7 +5,11 @@ import { SectionHeader } from "@/components/ui/section-header";
 import { AiValuationDraftPanel } from "@/components/valuations/ai-valuation-draft-panel";
 import { SensitivityChartLazy } from "@/components/valuations/sensitivity-chart-lazy";
 import type { companies, valuations } from "@/db/schema";
-import type { ValuationResult, ValuationScenarioInput } from "@/lib/valuations/calculations";
+import {
+  calculateValuationSensitivity,
+  type ValuationResult,
+  type ValuationScenarioInput
+} from "@/lib/valuations/calculations";
 import {
   getTemplate,
   labelFor,
@@ -291,6 +295,15 @@ function ValuationCard({ valuation, company }: { valuation: Valuation; company: 
   const bull = parseJson<ValuationScenarioInput>(valuation.scenarioBullJson);
   const template = getTemplate(valuation.templateType);
   const currentPrice = valuation.currentPrice / 100;
+  const sharesOutstanding = valuation.sharesOutstanding / 100;
+  const sensitivityMatrix = isScenarioInput(base)
+    ? calculateValuationSensitivity({
+        templateType: template.value,
+        currentPrice,
+        sharesOutstanding,
+        baseScenario: base
+      })
+    : undefined;
   const aiDraft = `请作为耐心的价值投资导师，用通俗语言解释这份 A 股估值。不要给买入或卖出建议，只解释估值方法、关键参数、安全边际和主要风险。公司=${company ? `${company.stockName}（${company.stockCode}）` : "未关联"}；模板=${template.label}；当前价格=${formatNumber(currentPrice)}；估值区间=${formatNumber(result.lowValuePerShare)}-${formatNumber(result.highValuePerShare)}；中性情景=${formatNumber(result.baseValuePerShare)}；安全边际=${formatPercent(result.baseMarginOfSafety)}；悲观假设=${bear.notes || "未填写"}；中性假设=${base.notes || "未填写"}；乐观假设=${bull.notes || "未填写"}。`;
   const opponentDraft = `请作为投资委员会反方委员，质疑这份 A 股估值。不要给买入或卖出建议，请重点找乐观假设、模型误用、风险遗漏和需要补证据的地方。公司=${company ? `${company.stockName}（${company.stockCode}）` : "未关联"}；模板=${template.label}；当前价格=${formatNumber(currentPrice)}；估值区间=${formatNumber(result.lowValuePerShare)}-${formatNumber(result.highValuePerShare)}；中性安全边际=${formatPercent(result.baseMarginOfSafety)}；风险提示=${result.riskFlags.join("；") || "无"}。`;
 
@@ -318,8 +331,11 @@ function ValuationCard({ valuation, company }: { valuation: Valuation; company: 
         currentPrice={currentPrice}
         data={result.scenarioResults.map((scenario) => ({
           name: labelFor(scenarios, scenario.name),
-          valuePerShare: scenario.valuePerShare
+          valuePerShare: scenario.valuePerShare,
+          marginOfSafety: scenario.marginOfSafety,
+          impliedUpside: scenario.impliedUpside
         }))}
+        matrix={sensitivityMatrix}
       />
 
       {result.riskFlags.length > 0 ? (
@@ -470,4 +486,14 @@ function formatPercent(value: number) {
   }
 
   return `${(value * 100).toFixed(1)}%`;
+}
+
+function isScenarioInput(value: Partial<ValuationScenarioInput>): value is ValuationScenarioInput {
+  return (
+    typeof value.basisAmount === "number" &&
+    typeof value.growthRate === "number" &&
+    typeof value.valuationMultiple === "number" &&
+    typeof value.discountRate === "number" &&
+    typeof value.terminalGrowthRate === "number"
+  );
 }

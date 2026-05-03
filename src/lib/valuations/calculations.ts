@@ -29,6 +29,21 @@ export type ValuationResult = {
   riskFlags: string[];
 };
 
+export type SensitivityCell = {
+  rowLabel: string;
+  columnLabel: string;
+  valuePerShare: number;
+  marginOfSafety: number;
+};
+
+export type ValuationSensitivityMatrix = {
+  rowAxisLabel: string;
+  columnAxisLabel: string;
+  rows: string[];
+  columns: string[];
+  cells: SensitivityCell[];
+};
+
 export function calculateValuation({
   templateType,
   currentPrice,
@@ -54,6 +69,70 @@ export function calculateValuation({
     baseImpliedUpside: base?.impliedUpside ?? 0,
     scenarioResults,
     riskFlags: buildRiskFlags({ templateType, currentPrice, sharesOutstanding, scenarios, baseValue: base?.valuePerShare ?? 0 })
+  };
+}
+
+export function calculateValuationSensitivity({
+  templateType,
+  currentPrice,
+  sharesOutstanding,
+  baseScenario
+}: {
+  templateType: ValuationTemplateType;
+  currentPrice: number;
+  sharesOutstanding: number;
+  baseScenario: ValuationScenarioInput;
+}): ValuationSensitivityMatrix {
+  const growthSteps = [-0.02, 0, 0.02];
+  const multipleSteps = [-0.15, 0, 0.15];
+  const discountSteps = [-0.01, 0, 0.01];
+  const terminalSteps = [-0.005, 0, 0.005];
+  const isManufacturing = templateType === "manufacturing";
+  const rowAxisLabel = isManufacturing ? "折现率" : "增长率";
+  const columnAxisLabel = isManufacturing ? "永续增长率" : "估值倍数";
+  const rowSteps = isManufacturing ? discountSteps : growthSteps;
+  const columnSteps = isManufacturing ? terminalSteps : multipleSteps;
+  const rows = rowSteps.map((step) =>
+    isManufacturing
+      ? formatPercentLabel(baseScenario.discountRate + step)
+      : formatPercentLabel(baseScenario.growthRate + step)
+  );
+  const columns = columnSteps.map((step) =>
+    isManufacturing
+      ? formatPercentLabel(baseScenario.terminalGrowthRate + step)
+      : formatMultipleLabel(baseScenario.valuationMultiple * (1 + step))
+  );
+
+  const cells = rowSteps.flatMap((rowStep, rowIndex) =>
+    columnSteps.map((columnStep, columnIndex) => {
+      const scenario = {
+        ...baseScenario,
+        growthRate: isManufacturing ? baseScenario.growthRate : Math.max(baseScenario.growthRate + rowStep, -0.95),
+        valuationMultiple: isManufacturing
+          ? baseScenario.valuationMultiple
+          : Math.max(baseScenario.valuationMultiple * (1 + columnStep), 0),
+        discountRate: isManufacturing ? Math.max(baseScenario.discountRate + rowStep, 0.01) : baseScenario.discountRate,
+        terminalGrowthRate: isManufacturing
+          ? Math.max(baseScenario.terminalGrowthRate + columnStep, -0.95)
+          : baseScenario.terminalGrowthRate
+      };
+      const result = calculateScenario({ templateType, currentPrice, sharesOutstanding, scenario });
+
+      return {
+        rowLabel: rows[rowIndex],
+        columnLabel: columns[columnIndex],
+        valuePerShare: result.valuePerShare,
+        marginOfSafety: result.marginOfSafety
+      };
+    })
+  );
+
+  return {
+    rowAxisLabel,
+    columnAxisLabel,
+    rows,
+    columns,
+    cells
   };
 }
 
@@ -174,4 +253,12 @@ function buildRiskFlags({
 
 function round(value: number) {
   return Math.round(value * 10000) / 10000;
+}
+
+function formatPercentLabel(value: number) {
+  return `${(value * 100).toFixed(1)}%`;
+}
+
+function formatMultipleLabel(value: number) {
+  return `${value.toFixed(1)}x`;
 }
