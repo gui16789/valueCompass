@@ -9,9 +9,11 @@ import {
   decisions,
   investmentPrinciples,
   knowledgeNodes,
+  learningProgress,
   modelConfigs,
   modelProviders,
   reviews,
+  trainingResults,
   valuations
 } from "@/db/schema";
 
@@ -22,6 +24,8 @@ export async function GET() {
     conversationRows,
     messageRows,
     knowledgeRows,
+    learningProgressRows,
+    trainingResultRows,
     companyRows,
     principleRows,
     checklistTemplateRows,
@@ -52,6 +56,8 @@ export async function GET() {
     db.select().from(aiConversations),
     db.select().from(aiMessages),
     db.select().from(knowledgeNodes),
+    db.select().from(learningProgress),
+    db.select().from(trainingResults),
     db.select().from(companies),
     db.select().from(investmentPrinciples),
     db.select().from(customChecklistTemplates),
@@ -73,6 +79,8 @@ export async function GET() {
       aiConversations: conversationRows,
       aiMessages: messageRows,
       knowledgeNodes: knowledgeRows,
+      learningProgress: learningProgressRows,
+      trainingResults: trainingResultRows,
       companies: companyRows,
       investmentPrinciples: principleRows,
       customChecklistTemplates: checklistTemplateRows,

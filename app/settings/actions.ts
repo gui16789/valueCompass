@@ -14,9 +14,11 @@ import {
   decisions,
   investmentPrinciples,
   knowledgeNodes,
+  learningProgress,
   modelConfigs,
   modelProviders,
   reviews,
+  trainingResults,
   valuations
 } from "@/db/schema";
 import { encryptSecret } from "@/lib/encryption/crypto";
@@ -115,6 +117,28 @@ const importPayloadSchema = z.object({
       orderIndex: integerValue,
       createdAt: stringValue,
       updatedAt: stringValue
+    })).default([]),
+    learningProgress: z.array(z.object({
+      id: z.string().min(1),
+      nodeId: z.string().min(1),
+      status: stringValue.default("not_started"),
+      masteryScore: integerValue,
+      notes: stringValue,
+      completedAt: optionalStringValue,
+      createdAt: stringValue,
+      updatedAt: stringValue
+    })).default([]),
+    trainingResults: z.array(z.object({
+      id: z.string().min(1),
+      questionSetJson: stringValue.default("[]"),
+      answersJson: stringValue.default("{}"),
+      weakTopicsJson: stringValue.default("[]"),
+      answeredCount: integerValue,
+      correctCount: integerValue,
+      score: integerValue,
+      reviewAdvice: stringValue,
+      examinerPrompt: stringValue,
+      createdAt: stringValue
     })).default([]),
     companies: z.array(z.object({
       id: z.string().min(1),
@@ -478,6 +502,8 @@ export async function importBackup(formData: FormData) {
     aiConversations: 0,
     aiMessages: 0,
     knowledgeNodes: 0,
+    learningProgress: 0,
+    trainingResults: 0,
     companies: 0,
     investmentPrinciples: 0,
     customChecklistTemplates: 0,
@@ -517,6 +543,8 @@ export async function importBackup(formData: FormData) {
   importedCounts.aiConversations = await upsertRows(aiConversations, data.aiConversations);
   importedCounts.aiMessages = await upsertRows(aiMessages, data.aiMessages);
   importedCounts.knowledgeNodes = await upsertRows(knowledgeNodes, data.knowledgeNodes);
+  importedCounts.learningProgress = await upsertRows(learningProgress, data.learningProgress);
+  importedCounts.trainingResults = await upsertRows(trainingResults, data.trainingResults);
   importedCounts.companies = await upsertRows(companies, data.companies);
   importedCounts.investmentPrinciples = await upsertRows(investmentPrinciples, data.investmentPrinciples);
   importedCounts.customChecklistTemplates = await upsertRows(customChecklistTemplates, data.customChecklistTemplates);
@@ -526,6 +554,8 @@ export async function importBackup(formData: FormData) {
   importedCounts.reviews = await upsertRows(reviews, data.reviews);
 
   revalidatePath("/");
+  revalidatePath("/learn");
+  revalidatePath("/training");
   revalidatePath("/settings");
   revalidatePath("/watchlist");
   revalidatePath("/valuations");
@@ -564,6 +594,8 @@ function formatImportSummary(counts: Record<string, number>) {
     aiConversations: "AI 对话",
     aiMessages: "AI 消息",
     knowledgeNodes: "知识节点",
+    learningProgress: "学习进度",
+    trainingResults: "训练结果",
     companies: "观察池公司",
     investmentPrinciples: "投资原则",
     customChecklistTemplates: "自定义清单",
