@@ -113,6 +113,56 @@ function ValuationWalkthrough({ caseStudy }: { caseStudy: AShareCaseStudy }) {
 
       <InfoBlock title="数据来源与教学口径" value={walkthrough.sourceNote} />
 
+      <div className="rounded-md border border-border bg-card p-4">
+        <div className="flex items-center gap-2 text-sm font-semibold text-primary">
+          <Scale className="h-4 w-4" aria-hidden />
+          估值方法选择：为什么美的不用烟蒂股或纯成长股公式
+        </div>
+        <div className="mt-3 grid gap-3 xl:grid-cols-2">
+          {walkthrough.methodSelection.map((method) => (
+            <div key={method.method} className="rounded-md border border-border bg-background p-4">
+              <h4 className="font-semibold">{method.method}</h4>
+              <div className="mt-3 space-y-3 text-sm leading-6 text-muted-foreground">
+                <p>
+                  <span className="font-semibold text-foreground">常用公式：</span>
+                  {method.typicalFormula}
+                </p>
+                <p>
+                  <span className="font-semibold text-foreground">适用对象：</span>
+                  {method.suitableFor}
+                </p>
+                <p>
+                  <span className="font-semibold text-foreground">套到美的：</span>
+                  {method.mideaFit}
+                </p>
+                <p>
+                  <span className="font-semibold text-foreground">本案例决策：</span>
+                  {method.decision}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="rounded-md border border-border bg-card p-4">
+        <div className="flex items-center gap-2 text-sm font-semibold text-primary">
+          <Calculator className="h-4 w-4" aria-hidden />
+          主公式：{walkthrough.primaryFormula.name}
+        </div>
+        <p className="mt-3 rounded-md border border-border bg-background px-3 py-2 text-sm font-semibold leading-6">
+          {walkthrough.primaryFormula.formula}
+        </p>
+        <p className="mt-3 text-sm leading-6 text-muted-foreground">{walkthrough.primaryFormula.whyPrimary}</p>
+        <div className="mt-3 grid gap-2 md:grid-cols-2">
+          {walkthrough.primaryFormula.inputExplanation.map((item) => (
+            <div key={item} className="rounded-md border border-border bg-background px-3 py-2 text-sm leading-6 text-muted-foreground">
+              {item}
+            </div>
+          ))}
+        </div>
+      </div>
+
       <div className="grid gap-4 xl:grid-cols-3">
         {walkthrough.preferredTools.map((tool) => (
           <div key={tool.name} className="rounded-md border border-border bg-card p-4">
@@ -166,6 +216,17 @@ function ValuationWalkthrough({ caseStudy }: { caseStudy: AShareCaseStudy }) {
                 <div className="font-semibold text-primary">公式</div>
                 <p className="mt-1 leading-6 text-muted-foreground">{scenario.formula}</p>
               </div>
+              <div className="mt-3 rounded-md border border-border bg-card p-3">
+                <div className="text-sm font-semibold text-primary">手把手代入</div>
+                <div className="mt-2 space-y-2">
+                  {scenario.formulaSteps.map((step) => (
+                    <div key={step} className="flex gap-2 text-sm leading-6 text-muted-foreground">
+                      <CheckCircle2 className="mt-1 h-4 w-4 shrink-0 text-primary" aria-hidden />
+                      <span>{step}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
               <div className="mt-3 grid gap-2 sm:grid-cols-2 xl:grid-cols-1">
                 <MetricBox label="股权价值区间" value={scenario.equityValueRange} />
                 <MetricBox label="每股教学区间" value={scenario.perShareRange} />
@@ -175,6 +236,14 @@ function ValuationWalkthrough({ caseStudy }: { caseStudy: AShareCaseStudy }) {
           ))}
         </div>
       </div>
+
+      <StructuredBlock
+        icon={<Calculator className="h-4 w-4" aria-hidden />}
+        title="交叉验证：不用单一公式说服自己"
+        items={walkthrough.crossChecks.map(
+          (item) => `${item.method}：${item.formula}；结果：${item.result}；教学意义：${item.lesson}`
+        )}
+      />
 
       <div className="grid gap-4 xl:grid-cols-2">
         <StructuredBlock
