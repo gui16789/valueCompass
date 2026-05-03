@@ -1,40 +1,38 @@
+import Link from "next/link";
 import { ArrowRight, BookOpen, Brain, LineChart, ShieldCheck } from "lucide-react";
 import { SectionHeader } from "@/components/ui/section-header";
-
-const timeline = [
-  "格雷厄姆与多德",
-  "巴菲特早期",
-  "巴菲特与芒格",
-  "费雪成长股",
-  "彼得·林奇",
-  "卡拉曼安全边际",
-  "A 股本土化"
-];
+import { knowledgeNodes } from "@/lib/learning/nodes";
 
 const modules = [
   {
     title: "学习地图",
     description: "从经典学派到 A 股案例，补齐价值投资底层框架。",
+    href: "/learn",
     icon: BookOpen
   },
   {
     title: "AI 导师",
     description: "既能耐心讲清概念，也会追问你的假设和漏洞。",
+    href: "/mentor",
     icon: Brain
   },
   {
     title: "估值工具",
     description: "用四类 A 股模板，把价格、假设和安全边际算明白。",
+    href: "/valuations",
     icon: LineChart
   },
   {
     title: "投资纪律",
     description: "用原则、清单、日志和复盘，减少情绪化决策。",
+    href: "/system",
     icon: ShieldCheck
   }
 ];
 
 export default function HomePage() {
+  const timelineNodes = knowledgeNodes.filter((node) => node.type === "timeline");
+
   return (
     <main className="space-y-10">
       <section className="rounded-lg border border-border bg-card p-8">
@@ -52,16 +50,23 @@ export default function HomePage() {
           title="价值投资时间线"
           description="沿着经典学派、关键人物和 A 股本土案例，建立自己的价值投资知识地图。"
         />
-        <div className="mt-4 grid gap-3 md:grid-cols-7">
-          {timeline.map((item, index) => (
-            <div key={item} className="rounded-lg border border-border bg-card p-4">
-              <div className="text-xs font-semibold text-muted-foreground">0{index + 1}</div>
-              <div className="mt-2 text-sm font-semibold">{item}</div>
-              {index < timeline.length - 1 ? (
-                <ArrowRight className="mt-4 h-4 w-4 text-primary" aria-hidden />
-              ) : null}
-            </div>
-          ))}
+        <div className="mt-4 overflow-x-auto pb-2">
+          <div className="grid min-w-[980px] grid-cols-8 gap-3">
+            {timelineNodes.map((node, index) => (
+              <Link
+                key={node.id}
+                href={`/learn/${node.id}`}
+                className="group rounded-lg border border-border bg-card p-4 transition hover:border-primary hover:bg-muted"
+              >
+                <div className="text-xs font-semibold text-muted-foreground">{node.period}</div>
+                <div className="mt-3 min-h-12 text-sm font-semibold leading-6">{node.title}</div>
+                <div className="mt-3 flex items-center justify-between">
+                  <span className="text-xs text-muted-foreground">{String(index + 1).padStart(2, "0")}</span>
+                  <ArrowRight className="h-4 w-4 text-primary transition group-hover:translate-x-1" aria-hidden />
+                </div>
+              </Link>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -71,11 +76,15 @@ export default function HomePage() {
           {modules.map((module) => {
             const Icon = module.icon;
             return (
-              <div key={module.title} className="rounded-lg border border-border bg-card p-5">
+              <Link
+                key={module.title}
+                href={module.href}
+                className="rounded-lg border border-border bg-card p-5 transition hover:border-primary hover:bg-muted"
+              >
                 <Icon className="h-5 w-5 text-primary" aria-hidden />
                 <h2 className="mt-4 text-lg font-semibold">{module.title}</h2>
                 <p className="mt-2 text-sm leading-6 text-muted-foreground">{module.description}</p>
-              </div>
+              </Link>
             );
           })}
         </div>
