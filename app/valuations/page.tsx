@@ -2,6 +2,7 @@ import Link from "next/link";
 import { AlertCircle, Bot, Calculator, CheckCircle2, ShieldAlert, Sigma } from "lucide-react";
 import { PendingButton } from "@/components/ui/pending-button";
 import { SectionHeader } from "@/components/ui/section-header";
+import { AiValuationDraftPanel } from "@/components/valuations/ai-valuation-draft-panel";
 import { SensitivityChartLazy } from "@/components/valuations/sensitivity-chart-lazy";
 import type { companies, valuations } from "@/db/schema";
 import type { ValuationResult, ValuationScenarioInput } from "@/lib/valuations/calculations";
@@ -56,6 +57,8 @@ export default async function ValuationsPage({ searchParams }: ValuationsPagePro
       ) : null}
 
       <TemplateSelectionGuide />
+
+      <AiValuationDraftPanel companies={data.companies} saveAction={saveValuation} />
 
       <section className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
         <section className="rounded-lg border border-border bg-card p-6">
@@ -379,8 +382,9 @@ function Field({
           step={step}
           defaultValue={defaultValue}
           placeholder={placeholder}
-          disabled={disabled}
-          className="min-w-0 flex-1 rounded-md bg-transparent px-3 py-2 text-sm outline-none disabled:text-muted-foreground"
+          readOnly={disabled}
+          aria-disabled={disabled}
+          className="min-w-0 flex-1 rounded-md bg-transparent px-3 py-2 text-sm outline-none read-only:text-muted-foreground"
         />
         {suffix ? <span className="border-l border-border px-3 py-2 text-sm text-muted-foreground">{suffix}</span> : null}
       </div>
