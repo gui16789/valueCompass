@@ -237,6 +237,8 @@ function ValuationWalkthrough({ caseStudy }: { caseStudy: AShareCaseStudy }) {
         </div>
       </div>
 
+      {walkthrough.forecastValuation ? <ForecastValuation walkthrough={walkthrough.forecastValuation} /> : null}
+
       <StructuredBlock
         icon={<Calculator className="h-4 w-4" aria-hidden />}
         title="交叉验证：不用单一公式说服自己"
@@ -268,6 +270,103 @@ function ValuationWalkthrough({ caseStudy }: { caseStudy: AShareCaseStudy }) {
         items={walkthrough.knowledgeLinks.map((item) => `${item.concept}：${item.application}`)}
       />
     </section>
+  );
+}
+
+function ForecastValuation({
+  walkthrough
+}: {
+  walkthrough: NonNullable<AShareCaseStudy["valuationWalkthrough"]>["forecastValuation"];
+}) {
+  if (!walkthrough) {
+    return null;
+  }
+
+  return (
+    <div className="rounded-md border border-border bg-card p-4">
+      <div className="flex items-center gap-2 text-sm font-semibold text-primary">
+        <LineChart className="h-4 w-4" aria-hidden />
+        {walkthrough.title}
+      </div>
+      <p className="mt-2 text-sm leading-6 text-muted-foreground">{walkthrough.sourceNote}</p>
+      <div className="mt-3 rounded-md border border-border bg-background p-3 text-sm leading-6 text-muted-foreground">
+        参考价格口径：{walkthrough.referencePrice}
+      </div>
+
+      <div className="mt-3 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+        {walkthrough.baseData.map((item) => (
+          <div key={item.label} className="rounded-md border border-border bg-background p-3">
+            <div className="text-xs font-semibold text-muted-foreground">{item.label}</div>
+            <div className="mt-1 text-sm font-semibold text-primary">{item.value}</div>
+            <p className="mt-2 text-xs leading-5 text-muted-foreground">{item.note}</p>
+          </div>
+        ))}
+      </div>
+
+      <div className="mt-3 grid gap-3 xl:grid-cols-3">
+        {walkthrough.methodNotes.map((item) => (
+          <div key={item.method} className="rounded-md border border-border bg-background p-3">
+            <div className="text-sm font-semibold">{item.method}</div>
+            <p className="mt-2 text-sm leading-6 text-muted-foreground">{item.use}</p>
+            <p className="mt-2 text-xs leading-5 text-muted-foreground">注意：{item.caution}</p>
+          </div>
+        ))}
+      </div>
+
+      <div className="mt-4 space-y-4">
+        {walkthrough.scenarios.map((scenario) => (
+          <div key={scenario.name} className="rounded-md border border-border bg-background p-4">
+            <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+              <h4 className="font-semibold">{scenario.name}</h4>
+              <span className="w-fit rounded-md border border-border bg-card px-2 py-1 text-xs font-semibold text-muted-foreground">
+                教学权重：{scenario.probability}
+              </span>
+            </div>
+            <div className="mt-3 grid gap-2 md:grid-cols-3">
+              {scenario.assumptions.map((assumption) => (
+                <div key={assumption} className="rounded-md border border-border bg-card px-3 py-2 text-sm leading-6 text-muted-foreground">
+                  {assumption}
+                </div>
+              ))}
+            </div>
+            <div className="mt-3 overflow-x-auto">
+              <table className="w-full min-w-[720px] border-collapse text-sm">
+                <thead>
+                  <tr className="border-b border-border text-left text-xs text-muted-foreground">
+                    <th className="py-2 pr-3 font-semibold">年份</th>
+                    <th className="py-2 pr-3 font-semibold">利润假设</th>
+                    <th className="py-2 pr-3 font-semibold">PE 倍数</th>
+                    <th className="py-2 pr-3 font-semibold">股权价值</th>
+                    <th className="py-2 pr-3 font-semibold">每股推演值</th>
+                    <th className="py-2 font-semibold">与参考价关系</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {scenario.rows.map((row) => (
+                    <tr key={`${scenario.name}-${row.year}`} className="border-b border-border/60 last:border-b-0">
+                      <td className="py-2 pr-3 font-semibold">{row.year}</td>
+                      <td className="py-2 pr-3 text-muted-foreground">{row.netProfit}</td>
+                      <td className="py-2 pr-3 text-muted-foreground">{row.multiple}</td>
+                      <td className="py-2 pr-3 text-muted-foreground">{row.equityValue}</td>
+                      <td className="py-2 pr-3 text-muted-foreground">{row.perShareValue}</td>
+                      <td className="py-2 text-muted-foreground">{row.comparison}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <div className="mt-3 grid gap-2 md:grid-cols-[220px_1fr]">
+              <MetricBox label="教学推演区间" value={scenario.teachingRange} />
+              <p className="rounded-md border border-border bg-card p-3 text-sm leading-6 text-muted-foreground">{scenario.lesson}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <InfoBlock title="概率加权教学值" value={`${walkthrough.weightedResult.formula}；${walkthrough.weightedResult.result}。${walkthrough.weightedResult.lesson}`} />
+      <ListBlock title="需要修正的常见推理错误" items={walkthrough.corrections} />
+      <ListBlock title="使用这个模型前必须确认" items={walkthrough.boundaryNotes} />
+    </div>
   );
 }
 

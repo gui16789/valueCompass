@@ -53,6 +53,43 @@ export type AShareValuationWalkthrough = {
     perShareRange: string;
     interpretation: string;
   }>;
+  forecastValuation?: {
+    title: string;
+    sourceNote: string;
+    referencePrice: string;
+    boundaryNotes: string[];
+    baseData: Array<{
+      label: string;
+      value: string;
+      note: string;
+    }>;
+    methodNotes: Array<{
+      method: string;
+      use: string;
+      caution: string;
+    }>;
+    scenarios: Array<{
+      name: string;
+      probability: string;
+      assumptions: string[];
+      rows: Array<{
+        year: string;
+        netProfit: string;
+        multiple: string;
+        equityValue: string;
+        perShareValue: string;
+        comparison: string;
+      }>;
+      teachingRange: string;
+      lesson: string;
+    }>;
+    weightedResult: {
+      formula: string;
+      result: string;
+      lesson: string;
+    };
+    corrections: string[];
+  };
   crossChecks: Array<{
     method: string;
     formula: string;
@@ -438,7 +475,13 @@ const aShareCaseStudies: AShareCaseStudy[] = [
       "扩产期资本开支较重，自由现金流可能与利润背离。",
       "海外资源项目涉及地缘、合规、环保、汇率和项目爬坡风险。"
     ],
-    sourceHints: ["华友钴业 2025 年年度报告", "上交所公告", "公司官网投资者关系资料", "镍、钴、锂、铜公开价格数据"],
+    sourceHints: [
+      "华友钴业 2025 年年度报告",
+      "华友钴业 2026 年第一季度报告",
+      "上交所公告",
+      "用户提供的 Wind 与券商研报预测口径",
+      "镍、钴、锂、铜公开价格数据"
+    ],
     valuationWalkthrough: {
       dataAsOf: "2025 年年度报告，公告日期为 2026-04-08",
       sourceNote:
@@ -589,6 +632,18 @@ const aShareCaseStudies: AShareCaseStudy[] = [
           value: "镍、钴、锂、铜、三元前驱体、正极材料",
           source: "2025 年报业务与收入成本分析",
           useInValuation: "用于拆解利润来源，判断公司更像资源周期股、材料制造股，还是两者混合。"
+        },
+        {
+          label: "2026Q1 归母净利润",
+          value: "约 24.97 亿元",
+          source: "2026 年第一季度报告，用户提供口径显示同比约 +99.45%",
+          useInValuation: "用于验证 2026 年预测的起点，但单季度高增长不能直接年化为全年利润。"
+        },
+        {
+          label: "券商预测净利润中值",
+          value: "2026E 95 亿元 / 2027E 115 亿元 / 2028E 135 亿元",
+          source: "用户提供的 Wind 与东吴、平安、国信、中银、光大、长江等研报预测口径",
+          useInValuation: "作为预测版三情景模型的中性基准；需要持续复核研报日期、预测口径和金属价格假设。"
         }
       ],
       calculationSteps: [
@@ -666,6 +721,194 @@ const aShareCaseStudies: AShareCaseStudy[] = [
             "用于检验乐观叙事：必须看到价格、产能、客户、毛利率和现金流同时支持，而不是只靠新能源赛道标签。"
         }
       ],
+      forecastValuation: {
+        title: "研报预测版三情景模型：把 Wind / 券商预测改造成可复核假设",
+        sourceNote:
+          "以下模块使用用户提供的 Wind 数据与 2026 年 4 月多家券商研报预测作为教学输入；系统未内置 Wind，也不把研报预测视为事实。已披露历史数据以公司公告为准，2024 年归母净利润按年报口径为约 41.55 亿元，而不是 51.58 亿元。",
+        referencePrice:
+          "约 66 元 / 股、总股本约 18.97 亿股、参考日期为 2026-04-30。该价格只用于演示估值公式，不构成当前行情确认或交易依据。",
+        boundaryNotes: [
+          "预测利润、PE 倍数、概率权重都必须标记为假设，不能写成确定结论。",
+          "TTM PE 与 Forward PE 不能混用：用 2025 EPS 计算的是历史或 TTM 视角，用 2026E EPS 计算的是预测视角。",
+          "悲观情景低于参考价代表下行风险，不是安全边际；安全边际应来自保守价值高于价格，或价格显著低于保守价值。",
+          "金属价格、项目爬坡、产能利用率、客户长单和现金流必须逐项复核，否则高增长预测容易变成赛道想象。",
+          "页面不输出建仓、加仓、卖出或持有指令，只训练如何搭建估值模型和反方质疑。"
+        ],
+        baseData: [
+          {
+            label: "2025 已实现归母净利润",
+            value: "61.10 亿元",
+            note: "来自 2025 年报，是预测模型的最近完整年度起点。"
+          },
+          {
+            label: "2026Q1 归母净利润",
+            value: "24.97 亿元",
+            note: "用户提供口径同比约 +99.45%；需要拆分价格、销量、毛利率和一次性因素。"
+          },
+          {
+            label: "中性预测中值",
+            value: "2026E 95 / 2027E 115 / 2028E 135 亿元",
+            note: "来自用户提供的主流券商预测汇总，用作中性情景基准。"
+          },
+          {
+            label: "参考股本",
+            value: "18.97 亿股",
+            note: "每股推演值 = 股权价值 / 总股本；后续转股、回购或股权激励会影响结果。"
+          }
+        ],
+        methodNotes: [
+          {
+            method: "PE 法：主推演工具",
+            use:
+              "用预测归母净利润乘以合理 PE，适合把研报利润预测快速转成股权价值区间。",
+            caution:
+              "华友仍是周期制造公司，PE 倍数必须随商品价格和利润可持续性调整，不能直接套稳定消费股倍数。"
+          },
+          {
+            method: "PEG：成长性校验",
+            use:
+              "用 PE / 利润增速检查市场是否对增长付出过高价格，适合做辅助判断。",
+            caution:
+              "周期股在低基数和高景气阶段会出现漂亮 PEG，但利润可能均值回归，PEG 不能单独证明低估。"
+          },
+          {
+            method: "PB 与分部估值：辅助验证",
+            use:
+              "PB 检查重资产安全垫；分部估值把资源、冶炼、材料拆开，避免综合 PE 掩盖差异。",
+            caution:
+              "分部估值需要更细的分部利润或 EBITDA 数据，只有收入和毛利率时只能作为框架，不能当精确答案。"
+          }
+        ],
+        scenarios: [
+          {
+            name: "乐观情景",
+            probability: "20%",
+            assumptions: [
+              "镍、钴、锂价格继续上行或维持高景气。",
+              "Pomalaa、津巴布韦锂项目和匈牙利正极等产能释放超预期。",
+              "2026-2028 年利润 CAGR 按约 35%-40% 理解。"
+            ],
+            rows: [
+              {
+                year: "2026E",
+                netProfit: "110 亿元",
+                multiple: "20x",
+                equityValue: "2200 亿元",
+                perShareValue: "约 116 元",
+                comparison: "高于 66 元参考价约 76%"
+              },
+              {
+                year: "2027E",
+                netProfit: "150 亿元",
+                multiple: "18x",
+                equityValue: "2700 亿元",
+                perShareValue: "约 142 元",
+                comparison: "高于 66 元参考价约 115%"
+              },
+              {
+                year: "2028E",
+                netProfit: "195 亿元",
+                multiple: "16x",
+                equityValue: "3120 亿元",
+                perShareValue: "约 165 元",
+                comparison: "高于 66 元参考价约 149%"
+              }
+            ],
+            teachingRange: "约 116-165 元 / 股",
+            lesson:
+              "这是高景气和产能顺利兑现的推演，不应直接称为目标价。反方问题是：这个情景需要金属价格、销量、毛利率和现金流同时站在有利一边，概率是否真的足够高？"
+          },
+          {
+            name: "中性情景",
+            probability: "60%",
+            assumptions: [
+              "金属价格维持相对高位但不继续大幅扩张。",
+              "产能按计划释放，一体化优势逐步兑现。",
+              "2026-2028 年利润 CAGR 按约 25%-30% 理解。"
+            ],
+            rows: [
+              {
+                year: "2026E",
+                netProfit: "95 亿元",
+                multiple: "15x",
+                equityValue: "1425 亿元",
+                perShareValue: "约 75 元",
+                comparison: "高于 66 元参考价约 14%"
+              },
+              {
+                year: "2027E",
+                netProfit: "115 亿元",
+                multiple: "14x",
+                equityValue: "1610 亿元",
+                perShareValue: "约 85 元",
+                comparison: "高于 66 元参考价约 29%"
+              },
+              {
+                year: "2028E",
+                netProfit: "135 亿元",
+                multiple: "12x",
+                equityValue: "1620 亿元",
+                perShareValue: "约 85 元",
+                comparison: "高于 66 元参考价约 29%"
+              }
+            ],
+            teachingRange: "约 75-85 元 / 股",
+            lesson:
+              "这是以券商预测中值为基准的情景。注意 2028 年利润更高但 PE 下调，所以每股推演值没有继续明显抬升，说明周期公司不能只看利润增长，还要看估值中枢是否下移。"
+          },
+          {
+            name: "悲观情景",
+            probability: "20%",
+            assumptions: [
+              "镍、钴、锂价格回落，下游需求或材料价格竞争低于预期。",
+              "项目爬坡延期，扩产带来折旧、利息和现金流压力。",
+              "2026-2028 年利润 CAGR 按约 10%-15% 理解。"
+            ],
+            rows: [
+              {
+                year: "2026E",
+                netProfit: "75 亿元",
+                multiple: "10x",
+                equityValue: "750 亿元",
+                perShareValue: "约 40 元",
+                comparison: "低于 66 元参考价约 40%"
+              },
+              {
+                year: "2027E",
+                netProfit: "85 亿元",
+                multiple: "9x",
+                equityValue: "765 亿元",
+                perShareValue: "约 40 元",
+                comparison: "低于 66 元参考价约 39%"
+              },
+              {
+                year: "2028E",
+                netProfit: "95 亿元",
+                multiple: "8x",
+                equityValue: "760 亿元",
+                perShareValue: "约 40 元",
+                comparison: "低于 66 元参考价约 39%"
+              }
+            ],
+            teachingRange: "约 40 元 / 股",
+            lesson:
+              "这是下行风险区间，不是安全垫。如果投资者的保守价值只有约 40 元，而参考价是 66 元，那么安全边际并不来自悲观情景，必须依赖中性或乐观假设兑现。"
+          }
+        ],
+        weightedResult: {
+          formula: "概率加权教学值 = 140 x 20% + 80 x 60% + 40 x 20%",
+          result: "约 84 元 / 股",
+          lesson:
+            "这只是把三种假设压缩成一个课堂数字，不能叫目标价。真正的价值投资动作是检查 20% / 60% / 20% 这些概率是否有证据，以及 84 元是否对关键错误足够迟钝。"
+        },
+        corrections: [
+          "“当前 PE 17.17 倍低于中性 15 倍”这个说法不严谨：17.17 高于 15；若用 2026E EPS 5.01 元，则 66 / 5.01 约为 13.2 倍，这是 Forward PE，不应和 TTM PE 混用。",
+          "“悲观情景 40 元，当前 66 元有 40% 缓冲”是反了。对买方而言，这是约 40% 下行风险，不是安全边际。",
+          "PEG 低于 1 只能说明在某个增长假设下价格不贵，不能证明周期制造公司一定低估，因为利润增速可能来自价格周期或低基数。",
+          "“历史 PE 18-22 倍、行业 PE 28-35 倍”需要注明样本、时间区间和可比公司，否则容易把不同商业模式的估值倍数混在一起。",
+          "分部估值法需要资源、冶炼、材料板块的分部利润或 EBITDA；只有收入和毛利率时，应先作为研究框架而不是直接给精确结论。"
+        ]
+      },
       crossChecks: [
         {
           method: "PB / 净资产交叉验证",
