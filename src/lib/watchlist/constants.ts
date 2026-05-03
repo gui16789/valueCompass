@@ -29,6 +29,22 @@ export const valuationStatuses = [
   { value: "needs_review", label: "待复核" }
 ];
 
+export const researchSourceTypes = [
+  { value: "annual_report", label: "年报 / 季报" },
+  { value: "announcement", label: "公告" },
+  { value: "research_note", label: "研究笔记" },
+  { value: "interview", label: "访谈 / 调研" },
+  { value: "manual_note", label: "手动记录" },
+  { value: "other", label: "其他" }
+];
+
+export const sourceVerificationStatuses = [
+  { value: "pending", label: "待确认" },
+  { value: "confirmed", label: "已确认" },
+  { value: "needs_review", label: "待复核" },
+  { value: "rejected", label: "已排除" }
+];
+
 export function labelFor(options: Array<{ value: string; label: string }>, value: string) {
   return options.find((option) => option.value === value)?.label ?? value;
 }

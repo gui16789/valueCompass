@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Bot, Building2, CheckCircle2, ShieldAlert } from "lucide-react";
+import { Bot, Building2, CheckCircle2, FileText, ShieldAlert } from "lucide-react";
 import { PendingButton } from "@/components/ui/pending-button";
 import { ResearchExtractionPanel } from "@/components/watchlist/research-extraction-panel";
 import { addCompany, applyExtractionDraft, updateCompany } from "./actions";
@@ -14,6 +14,8 @@ import {
 import { getWatchlistCompanies } from "@/lib/watchlist/queries";
 
 type Company = typeof companies.$inferSelect;
+
+export const dynamic = "force-dynamic";
 
 export default async function WatchlistPage() {
   const watchlist = await getWatchlistCompanies();
@@ -100,6 +102,13 @@ function CompanyCard({ company }: { company: Company }) {
       </div>
 
       <div className="mt-4 flex flex-wrap gap-2">
+        <Link
+          href={`/watchlist/${company.id}`}
+          className="inline-flex items-center gap-2 rounded-md bg-primary px-3 py-2 text-sm font-semibold text-primary-foreground transition hover:opacity-90"
+        >
+          <FileText className="h-4 w-4" aria-hidden />
+          研究详情
+        </Link>
         <Link
           href={`/mentor?role=research_assistant&draft=${encodeURIComponent(researchDraft)}`}
           className="inline-flex items-center gap-2 rounded-md border border-border bg-background px-3 py-2 text-sm font-semibold transition hover:bg-muted"
