@@ -3,6 +3,7 @@ import { AlertCircle, Bot, Calculator, CheckCircle2, ShieldAlert, Sigma } from "
 import { PendingButton } from "@/components/ui/pending-button";
 import { SectionHeader } from "@/components/ui/section-header";
 import { AiValuationDraftPanel } from "@/components/valuations/ai-valuation-draft-panel";
+import { MarketSnapshotLookup } from "@/components/valuations/market-snapshot-lookup";
 import { SensitivityChartLazy } from "@/components/valuations/sensitivity-chart-lazy";
 import type { companies, valuations } from "@/db/schema";
 import {
@@ -108,6 +109,9 @@ function ValuationForm({
 
       <form action={saveValuation} className="mt-4 space-y-5">
         <input type="hidden" name="templateType" value={templateType} />
+        <div data-market-snapshot-lookup-active>
+          <MarketSnapshotLookup companies={companies} />
+        </div>
         <div className="grid gap-4 md:grid-cols-2">
           <label className="block">
             <span className="text-sm font-semibold">关联公司</span>
