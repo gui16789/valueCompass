@@ -134,7 +134,7 @@ export function AiValuationDraftPanel({
   }
 
   return (
-    <section className="rounded-lg border border-border bg-card p-6">
+    <section className="page-panel rounded-lg p-6">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div>
           <div className="flex items-center gap-2">
@@ -142,11 +142,11 @@ export function AiValuationDraftPanel({
             <h2 className="text-xl font-semibold">AI 估值草稿</h2>
           </div>
           <p className="mt-2 max-w-3xl text-sm leading-6 text-muted-foreground">
-            粘贴财报摘要、年报片段或你的研究笔记，让 AI 生成三情景参数草稿。AI 不联网取数，也不会自动保存，最终数字必须由你确认。
+            选择公司后，系统会尝试读取行情快照和基础财务摘要，再生成三情景参数草稿。你也可以粘贴年报片段或研究笔记作为补充，最终数字必须由你确认。
           </p>
         </div>
-        <div className="rounded-md border border-border bg-background px-3 py-2 text-xs leading-5 text-muted-foreground">
-          先生成草稿，再人工调整，最后保存估值
+        <div className="status-chip status-chip-warn rounded-md">
+          快照辅助填充，假设人工确认
         </div>
       </div>
 
@@ -194,19 +194,19 @@ export function AiValuationDraftPanel({
               </select>
             </label>
             <label className="block">
-              <span className="text-sm font-semibold">粘贴财报摘要或研究资料</span>
+              <span className="text-sm font-semibold">补充财报摘要或研究资料（可选）</span>
               <textarea
                 value={sourceText}
                 onChange={(event) => setSourceText(event.target.value)}
                 rows={9}
-                placeholder="例如：最近一年营收、归母净利润、经营现金流、资本开支、自由现金流、总股本、当前价格、分红、主要风险和你的假设。"
+                placeholder="可选：粘贴年报片段、你自己的研究假设、分红信息、竞争优势、风险点。系统会先尝试自动读取基础财务摘要。"
                 className="mt-2 w-full resize-y rounded-md border border-border bg-background px-3 py-2 text-sm leading-6 outline-none transition focus:border-primary"
               />
             </label>
             <button
               type="button"
               onClick={generateDraft}
-              disabled={!selectedCompany || sourceText.trim().length < 40 || isGenerating}
+              disabled={!selectedCompany || isGenerating}
               className="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition hover:opacity-90 disabled:opacity-50"
             >
               <Bot className="h-4 w-4" aria-hidden />
@@ -271,7 +271,7 @@ export function AiValuationDraftPanel({
                 <div>
                   <p className="text-sm font-semibold">估值草稿会显示在这里</p>
                   <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                    AI 会给出三情景参数、模板理由和待确认事项。缺失的数据会保留为 0，保存前需要你补齐。
+                    AI 会给出三情景参数、模板理由和待确认事项。行情快照只能补基础字段，估值起点和关键假设仍需要你补证据。
                   </p>
                 </div>
               </div>
@@ -302,7 +302,7 @@ function EditableSummary({
           </p>
         </div>
         {draft.cautions.length > 0 ? (
-          <span className="rounded-full border border-border bg-card px-3 py-1 text-xs font-semibold text-muted-foreground">
+          <span className="status-chip status-chip-warn">
             待确认 {draft.cautions.length} 项
           </span>
         ) : null}

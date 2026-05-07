@@ -23,7 +23,7 @@ export default async function WatchlistPage() {
 
   return (
     <main className="space-y-8">
-      <section className="rounded-lg border border-border bg-card p-6">
+      <section className="hero-panel rounded-lg p-6">
         <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
           <div>
             <p className="text-sm font-semibold text-primary">A 股观察池</p>
@@ -32,7 +32,7 @@ export default async function WatchlistPage() {
               手动维护公司、能力圈、研究状态、估值状态、关键风险和下一步行动。这里不输出买入建议，只帮助你组织研究。
             </p>
           </div>
-          <div className="grid grid-cols-3 gap-2 rounded-lg border border-border bg-background p-3 text-center">
+          <div className="grid grid-cols-3 gap-2 rounded-lg border border-border bg-card/80 p-3 text-center">
             <Metric label="公司" value={watchlist.length} />
             <Metric label="能力圈" value={circleCount} />
             <Metric label="待估值" value={watchlist.filter((company) => company.valuationStatus === "not_started").length} />
@@ -43,7 +43,7 @@ export default async function WatchlistPage() {
       <ResearchExtractionPanel companies={watchlist} applyAction={applyExtractionDraft} />
 
       <section className="grid gap-6 xl:grid-cols-[420px_1fr]">
-        <div className="rounded-lg border border-border bg-card p-5">
+        <div className="page-panel rounded-lg p-5">
           <div className="flex items-center gap-2">
             <Building2 className="h-5 w-5 text-primary" aria-hidden />
             <h2 className="text-xl font-semibold">新增公司</h2>
@@ -53,7 +53,7 @@ export default async function WatchlistPage() {
 
         <div className="space-y-4">
           {watchlist.length === 0 ? (
-            <div className="rounded-lg border border-dashed border-border bg-card p-8 text-center">
+            <div className="page-panel rounded-lg border-dashed p-8 text-center">
               <p className="font-semibold">观察池还是空的</p>
               <p className="mt-2 text-sm leading-6 text-muted-foreground">
                 先添加一家公司，例如你正在学习的银行、消费、周期或制造业案例。
@@ -73,7 +73,7 @@ function CompanyCard({ company }: { company: Company }) {
   const opponentDraft = `请作为投资委员会反方委员，质疑我对 ${company.stockName}（${company.stockCode}）的观察理由。不要给买入卖出建议，请围绕商业模式、财务质量、估值假设、风险和我的能力圈提出追问。我的初步观点：${company.thesis || "暂未填写"}`;
 
   return (
-    <article className="rounded-lg border border-border bg-card p-5">
+    <article className="page-panel rounded-lg p-5">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div>
           <div className="flex flex-wrap items-center gap-2 text-sm font-semibold text-primary">
@@ -125,7 +125,7 @@ function CompanyCard({ company }: { company: Company }) {
         </Link>
       </div>
 
-      <details className="mt-4 rounded-lg border border-border bg-background p-4">
+      <details className="mt-4 rounded-lg border border-border bg-background p-4 open:bg-card">
         <summary className="cursor-pointer text-sm font-semibold">编辑研究状态</summary>
         <CompanyForm
           action={updateCompany}
@@ -267,7 +267,7 @@ function TextArea({
 
 function StatusPill({ label }: { label: string }) {
   return (
-    <span className="rounded-full border border-border bg-background px-3 py-1 text-xs font-semibold text-muted-foreground">
+    <span className="status-chip">
       {label}
     </span>
   );
@@ -284,7 +284,7 @@ function InfoBlock({ title, value }: { title: string; value: string }) {
 
 function Metric({ label, value }: { label: string; value: number }) {
   return (
-    <div className="min-w-20 rounded-md bg-card px-4 py-3">
+    <div className="metric-card">
       <div className="text-xl font-semibold">{value}</div>
       <div className="mt-1 text-xs text-muted-foreground">{label}</div>
     </div>

@@ -114,7 +114,7 @@ export function TrainingArena({ questions, recentResults, onSaveResult }: Traini
 
   return (
     <main className="space-y-8">
-      <section className="rounded-lg border border-border bg-card p-6">
+      <section className="hero-panel rounded-lg p-6">
         <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
           <div>
             <p className="text-sm font-semibold text-primary">价值投资训练场</p>
@@ -123,7 +123,7 @@ export function TrainingArena({ questions, recentResults, onSaveResult }: Traini
               用概念题、场景题和 A 股案例题检查学习漏洞。系统只做学习反馈，不输出买卖建议。
             </p>
           </div>
-          <div className="grid grid-cols-3 gap-2 rounded-lg border border-border bg-background p-3 text-center">
+          <div className="grid grid-cols-3 gap-2 rounded-lg border border-border bg-card/80 p-3 text-center">
             <Metric label="题目" value={questions.length} />
             <Metric label="已答" value={result.answered} />
             <Metric label="得分" value={submitted ? result.score : 0} suffix="%" />
@@ -131,7 +131,7 @@ export function TrainingArena({ questions, recentResults, onSaveResult }: Traini
         </div>
       </section>
 
-      <section className="rounded-lg border border-border bg-card p-5">
+      <section className="page-panel rounded-lg p-5">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex flex-wrap gap-2">
             {filters.map((filter) => (
@@ -141,7 +141,7 @@ export function TrainingArena({ questions, recentResults, onSaveResult }: Traini
                 onClick={() => setActiveType(filter.value)}
                 className={`rounded-md border px-3 py-2 text-sm font-semibold transition ${
                   activeType === filter.value
-                    ? "border-primary bg-muted"
+                    ? "border-primary bg-muted text-primary"
                     : "border-border bg-background hover:bg-muted"
                 }`}
               >
@@ -172,7 +172,7 @@ export function TrainingArena({ questions, recentResults, onSaveResult }: Traini
       </section>
 
       {submitted ? (
-        <section className="rounded-lg border border-border bg-card p-5">
+        <section className="page-panel rounded-lg p-5">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
             <div>
               <h2 className="text-xl font-semibold">掌握度报告</h2>
@@ -216,7 +216,7 @@ export function TrainingArena({ questions, recentResults, onSaveResult }: Traini
 
 function RecentResultsPanel({ results }: { results: TrainingResultRow[] }) {
   return (
-    <section className="rounded-lg border border-border bg-card p-5">
+    <section className="page-panel rounded-lg p-5">
       <div className="flex items-center gap-2">
         <History className="h-5 w-5 text-primary" aria-hidden />
         <h2 className="text-xl font-semibold">最近训练</h2>
@@ -289,7 +289,7 @@ function QuestionCard({
   const statusVisible = submitted && selectedOptionId;
 
   return (
-    <article className="rounded-lg border border-border bg-card p-5">
+    <article className="page-panel rounded-lg p-5">
       <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
         <div>
           <div className="flex flex-wrap items-center gap-2 text-sm font-semibold text-primary">
@@ -360,7 +360,7 @@ function QuestionCard({
 
 function Metric({ label, value, suffix = "" }: { label: string; value: number; suffix?: string }) {
   return (
-    <div className="min-w-20 rounded-md bg-card px-4 py-3">
+    <div className="metric-card">
       <div className="text-xl font-semibold">
         {value}
         {suffix}

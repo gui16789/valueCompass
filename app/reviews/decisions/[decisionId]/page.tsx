@@ -66,13 +66,13 @@ export default async function DecisionDetailPage({ params }: DecisionDetailPageP
         返回复盘
       </Link>
 
-      <section className="rounded-lg border border-border bg-card p-6">
+      <section className="hero-panel rounded-lg p-6">
         <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
           <SectionHeader
             title="决策详情"
             description="回看这次判断的证据链：公司、检查清单、关键假设、主要风险、关联原则、估值记录和后续复盘。"
           />
-          <div className="grid grid-cols-3 gap-2 rounded-lg border border-border bg-background p-3 text-center">
+          <div className="grid grid-cols-3 gap-2 rounded-lg border border-border bg-card/80 p-3 text-center">
             <Metric label="日期" value={decision.decisionDate} />
             <Metric label="类型" value={checklistLabelFor(checklistTypes, decision.decisionType)} />
             <Metric label="复盘" value={`${reviews.length} 条`} />
@@ -120,7 +120,7 @@ function DecisionSnapshot({
   risks: string;
 }) {
   return (
-    <section className="rounded-lg border border-border bg-card p-6">
+    <section className="page-panel rounded-lg p-6">
       <div className="flex items-center gap-2">
         <FileText className="h-5 w-5 text-primary" aria-hidden />
         <h2 className="text-xl font-semibold">用户决策记录</h2>
@@ -147,14 +147,14 @@ function ChecklistEvidence({ checklistRun }: { checklistRun: ChecklistRun | null
   const issueCount = items.filter((item) => item.required && (item.status === "fail" || item.status === "unknown")).length;
 
   return (
-    <section className="rounded-lg border border-border bg-card p-6">
+    <section className="page-panel rounded-lg p-6">
       <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
         <div className="flex items-center gap-2">
           <ClipboardCheck className="h-5 w-5 text-primary" aria-hidden />
           <h2 className="text-xl font-semibold">检查清单证据</h2>
         </div>
         {checklistRun ? (
-          <span className="rounded-full border border-border bg-background px-3 py-1 text-xs font-semibold text-muted-foreground">
+          <span className="status-chip">
             关键未确认/失败 {issueCount} 项
           </span>
         ) : null}
@@ -175,7 +175,7 @@ function ChecklistEvidence({ checklistRun }: { checklistRun: ChecklistRun | null
                   </div>
                   <p className="mt-2 text-sm leading-6">{item.text}</p>
                 </div>
-                <span className="rounded-full border border-border bg-card px-3 py-1 text-xs font-semibold text-muted-foreground">
+                <span className="status-chip">
                   {checklistLabelFor(checklistStatuses, item.status)}
                 </span>
               </div>
@@ -198,7 +198,7 @@ function ActionPanel({
   opponentDraft: string;
 }) {
   return (
-    <section className="rounded-lg border border-border bg-card p-6">
+    <section className="page-panel rounded-lg p-6">
       <h2 className="text-xl font-semibold">下一步动作</h2>
       <div className="mt-5 grid gap-3">
         <Link
@@ -229,7 +229,7 @@ function ActionPanel({
 
 function PrincipleSnapshot({ principle }: { principle: Principle | null }) {
   return (
-    <section className="rounded-lg border border-border bg-card p-6">
+    <section className="page-panel rounded-lg p-6">
       <h2 className="text-xl font-semibold">关联原则</h2>
       {!principle ? (
         <EmptyState text="这条决策没有关联投资原则。建议先在投资系统页面保存一套原则。" />
@@ -247,7 +247,7 @@ function PrincipleSnapshot({ principle }: { principle: Principle | null }) {
 
 function RelatedValuations({ valuations }: { valuations: Valuation[] }) {
   return (
-    <section className="rounded-lg border border-border bg-card p-6">
+    <section className="page-panel rounded-lg p-6">
       <div className="flex items-center gap-2">
         <Calculator className="h-5 w-5 text-primary" aria-hidden />
         <h2 className="text-xl font-semibold">相关估值</h2>
@@ -269,7 +269,7 @@ function RelatedValuations({ valuations }: { valuations: Valuation[] }) {
                       {template.label} / {valuation.valuationDate}
                     </p>
                   </div>
-                  <span className="rounded-full border border-border bg-card px-3 py-1 text-xs font-semibold text-muted-foreground">
+                  <span className="status-chip">
                     中性 {formatPrice(result?.baseValuePerShare)}
                   </span>
                 </div>
@@ -288,7 +288,7 @@ function RelatedValuations({ valuations }: { valuations: Valuation[] }) {
 
 function ReviewHistory({ reviews }: { reviews: Review[] }) {
   return (
-    <section className="rounded-lg border border-border bg-card p-6">
+    <section className="page-panel rounded-lg p-6">
       <div className="flex items-center gap-2">
         <RotateCcw className="h-5 w-5 text-primary" aria-hidden />
         <h2 className="text-xl font-semibold">已关联复盘</h2>
@@ -341,7 +341,7 @@ function EmptyState({ text }: { text: string }) {
 
 function Metric({ label, value }: { label: string; value: string }) {
   return (
-    <div className="min-w-20 rounded-md bg-card px-4 py-3">
+    <div className="metric-card">
       <div className="text-sm font-semibold">{value}</div>
       <div className="mt-1 text-xs text-muted-foreground">{label}</div>
     </div>

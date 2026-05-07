@@ -23,7 +23,7 @@ export function AShareCasePanel({ caseStudy }: AShareCasePanelProps) {
   const opponentDraft = `请作为投资委员会反方委员，质疑我研究 ${caseStudy.companyName}（${caseStudy.stockCode}）时可能遗漏的证据和过度乐观假设。不要给买入、卖出或持有建议。业务快照=${caseStudy.businessSnapshot}；关键风险=${caseStudy.riskReminders.join("；")}；证据清单=${caseStudy.evidenceChecklist.join("；")}；${walkthrough ? `估值过程=${walkthrough.scenarios.map((scenario) => `${scenario.name}假设:${scenario.assumptions.join("、")}`).join("；")}。` : ""}`;
 
   return (
-    <div className="rounded-lg border border-border bg-card p-5">
+    <div className="page-panel rounded-lg p-5">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div>
           <div className="flex flex-wrap items-center gap-2 text-sm font-semibold text-primary">
@@ -36,7 +36,7 @@ export function AShareCasePanel({ caseStudy }: AShareCasePanelProps) {
           <h2 className="mt-3 text-xl font-semibold">{caseStudy.caseTheme}</h2>
           <p className="mt-2 text-sm leading-6 text-muted-foreground">{caseStudy.businessSnapshot}</p>
         </div>
-        <span className="rounded-full border border-border bg-background px-3 py-1 text-xs font-semibold text-muted-foreground">
+        <span className="status-chip">
           {caseStudy.industry}
         </span>
       </div>

@@ -23,7 +23,7 @@ export default async function SettingsPage({ searchParams }: SettingsPageProps) 
 
   return (
     <main className="space-y-8">
-      <section className="rounded-lg border border-border bg-card p-6">
+      <section className="hero-panel rounded-lg p-6">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
           <SectionHeader
             title="模型配置中心"
@@ -43,7 +43,7 @@ export default async function SettingsPage({ searchParams }: SettingsPageProps) 
       ) : null}
 
       {!hasAppSecret ? (
-        <div className="rounded-lg border border-border bg-card p-5">
+        <div className="page-panel rounded-lg p-5">
           <div className="flex items-start gap-3">
             <AlertCircle className="mt-0.5 h-5 w-5 text-primary" aria-hidden />
             <div>
@@ -57,7 +57,7 @@ export default async function SettingsPage({ searchParams }: SettingsPageProps) 
       ) : null}
 
       <section className="grid gap-6 xl:grid-cols-[0.9fr_1.1fr]">
-        <div className="rounded-lg border border-border bg-card p-6">
+        <div className="page-panel rounded-lg p-6">
           <SectionHeader title="新增模型提供商" description="可配置 OpenAI、DeepSeek、通义千问兼容接口、本地兼容服务等。" />
           <form action={saveModelProvider} className="mt-6 space-y-5">
             <Field label="提供商名称" name="name" placeholder="例如：DeepSeek / OpenAI / 本地模型" />
@@ -93,7 +93,7 @@ export default async function SettingsPage({ searchParams }: SettingsPageProps) 
           </form>
         </div>
 
-        <div className="rounded-lg border border-border bg-card p-6">
+        <div className="page-panel rounded-lg p-6">
           <SectionHeader title="AI 角色分配" description="保存提供商后，系统会先把四个角色绑定到默认模型；后续可单独调整。" />
           <div className="mt-5 grid gap-3">
             {aiRoles.map((role) => (
@@ -109,7 +109,7 @@ export default async function SettingsPage({ searchParams }: SettingsPageProps) 
         </div>
       </section>
 
-      <section className="rounded-lg border border-border bg-card p-6">
+      <section className="page-panel rounded-lg p-6">
         <SectionHeader title="已保存提供商" description="连接测试会向配置的模型发送一条最小测试消息。" />
         <div className="mt-5 space-y-4">
           {providers.length === 0 ? (
@@ -124,7 +124,7 @@ export default async function SettingsPage({ searchParams }: SettingsPageProps) 
         </div>
       </section>
 
-      <section className="rounded-lg border border-border bg-card p-6">
+      <section className="page-panel rounded-lg p-6">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
           <SectionHeader
             title="本地数据备份"
@@ -215,7 +215,7 @@ function StatusBanner({ status, message }: { status: "success" | "error"; messag
   const Icon = status === "success" ? CheckCircle2 : AlertCircle;
 
   return (
-    <div className="rounded-lg border border-border bg-card p-4">
+    <div className="page-panel rounded-lg p-4">
       <div className="flex items-start gap-3">
         <Icon className="mt-0.5 h-5 w-5 text-primary" aria-hidden />
         <p className="text-sm leading-6">{message}</p>

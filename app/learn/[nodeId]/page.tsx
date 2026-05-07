@@ -50,7 +50,7 @@ export default async function NodeDetailPage({ params }: NodeDetailPageProps) {
         返回学习地图
       </Link>
 
-      <section className="rounded-lg border border-border bg-card p-6">
+      <section className="hero-panel rounded-lg p-6">
         <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
           <div>
             <div className="flex flex-wrap items-center gap-2 text-sm font-semibold text-primary">
@@ -85,7 +85,7 @@ export default async function NodeDetailPage({ params }: NodeDetailPageProps) {
         <aside className="space-y-6">
           <LearningStatusPanel nodeId={node.id} status={status} />
 
-          <div className="rounded-lg border border-border bg-card p-5">
+          <div className="page-panel rounded-lg p-5">
             <h2 className="font-semibold">经典书籍</h2>
             <div className="mt-3 space-y-2">
               {node.books.map((book) => (
@@ -96,7 +96,7 @@ export default async function NodeDetailPage({ params }: NodeDetailPageProps) {
             </div>
           </div>
 
-          <div className="rounded-lg border border-border bg-card p-5">
+          <div className="page-panel rounded-lg p-5">
             <h2 className="font-semibold">相关节点</h2>
             <div className="mt-3 space-y-2">
               {relatedNodes.map((related) => (
@@ -133,7 +133,7 @@ function LearningStatusPanel({ nodeId, status }: { nodeId: string; status: Learn
   ];
 
   return (
-    <div className="rounded-lg border border-border bg-card p-5">
+    <div className="page-panel rounded-lg p-5">
       <h2 className="font-semibold">学习状态</h2>
       <div className="mt-3 rounded-md border border-border bg-background px-3 py-2 text-sm">
         当前：<span className="font-semibold text-primary">{learningStatusLabels[status]}</span>
@@ -146,7 +146,7 @@ function LearningStatusPanel({ nodeId, status }: { nodeId: string; status: Learn
             <PendingButton
               pendingChildren={item.pending}
               disabled={status === item.status}
-              className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm font-semibold transition hover:bg-muted disabled:opacity-50"
+        className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm font-semibold transition hover:bg-muted disabled:opacity-50"
             >
               {item.label}
             </PendingButton>
@@ -162,7 +162,7 @@ function LearningStatusPanel({ nodeId, status }: { nodeId: string; status: Learn
 
 function InfoPanel({ title, items }: { title: string; items: string[] }) {
   return (
-    <div className="rounded-lg border border-border bg-card p-5">
+    <div className="page-panel rounded-lg p-5">
       <h2 className="font-semibold">{title}</h2>
       <div className="mt-4 space-y-3">
         {items.map((item) => (

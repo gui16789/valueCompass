@@ -11,10 +11,12 @@ export function PlaceholderPage({
 }) {
   return (
     <main className="space-y-6">
-      <SectionHeader title={title} description={description} />
+      <section className="hero-panel rounded-lg p-6">
+        <SectionHeader title={title} description={description} />
+      </section>
       <div className="grid gap-3 md:grid-cols-3">
         {items.map((item) => (
-          <div key={item} className="rounded-lg border border-border bg-card p-4 text-sm">
+          <div key={item} className="page-panel rounded-lg p-4 text-sm">
             {item}
           </div>
         ))}

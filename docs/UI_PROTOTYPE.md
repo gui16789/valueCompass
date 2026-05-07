@@ -1,17 +1,30 @@
 # 前端原型说明
 
-版本：v0.4
+版本：v0.5
 
-状态：低保真原型，待评审
+状态：高保真视觉方向已生成，第一轮已落地到现有页面
 
 ## 1. 当前结论
 
-目前项目已有可运行页面骨架，但在本文件之前还没有专门的前端原型图。v0.4 增加两类原型：
+目前项目已有可运行页面骨架和第一轮视觉落地。v0.5 在 v0.4 低保真信息架构基础上补充了高保真设计图，并把设计语言落到现有 Next/Tailwind 页面。
 
 - 文档低保真线框：用于确认页面信息层级。
 - 浏览器静态原型页：访问 `/prototype` 查看核心工作台布局。
+- 高保真设计图：见 `docs/designs/`。
+- 已落地视觉基底：全局工作台背景、顶栏、页面面板、指标卡、状态标签和主要业务页面样式。
 
 原型目标不是做营销型首页，而是先验证产品作为学习与投资流程工具是否清楚、克制、可长期使用。
+
+## 1.1 高保真设计图
+
+本轮使用 imagegen 生成 4 张设计板，作为页面视觉落地参考：
+
+- `docs/designs/01-dashboard-learning.png`：工作台与学习地图。
+- `docs/designs/02-mentor-training.png`：AI 导师与训练场。
+- `docs/designs/03-watchlist-valuations.png`：观察池与估值工具。
+- `docs/designs/04-system-reviews-settings.png`：投资系统、复盘与设置。
+
+设计图只作为视觉方向，不作为像素级还原要求。代码实现优先保证真实页面的信息密度、响应式可用性和长期维护成本。
 
 ## 2. 设计原则
 
@@ -33,9 +46,21 @@
 - 关键操作按钮使用图标加文字。
 - 复杂工具默认简化模式，高级字段折叠。
 
+## 3.1 已落地视觉语言
+
+当前实现采用以下全局视觉语言：
+
+- 背景：暖白色工作台底色，叠加极轻网格纹理，降低空白页感。
+- 顶栏：半透明粘性导航，品牌区展示“长投罗盘 / A 股价值投资工作台”。
+- 面板：使用 `hero-panel` 承载页面入口和关键摘要，使用 `page-panel` 承载业务模块。
+- 指标：使用 `metric-card` 展示学习进度、观察池、待复盘、待检查等数据。
+- 状态：使用 `status-chip`、`status-chip-primary`、`status-chip-warn` 统一状态表达。
+- 色彩：深绿色作为主行动和专业信号，琥珀色用于提醒和待确认，不使用交易刺激型大面积红绿。
+- 卡片：圆角控制在 8px 左右，保持工具型产品的克制感。
+
 ## 4. 工作台原型
 
-首页第一屏建议改成工作台，而不是大面积宣传语。
+首页第一屏已经改成工作台，而不是大面积宣传语。
 
 ```text
 ┌─────────────────────────────────────────────────────────────────────┐
@@ -143,8 +168,26 @@
 
 后续视觉设计需要继续确认：
 
-- 首页是否直接采用“工作台”作为第一屏。
 - 学习地图是横向时间线优先，还是学派关系图优先。
 - AI 导师是否常驻右侧抽屉，还是独立页面。
 - 观察池列表是否优先做表格密度，还是看板分组。
 - 估值工具是否默认双栏：输入在左，输出和 AI 解释在右。
+
+## 11. 第一轮落地范围
+
+2026-05-07 已完成第一轮视觉落地：
+
+- 全局样式：`app/globals.css`。
+- 应用外壳：`src/components/layout/app-shell.tsx`。
+- 首页工作台：`app/page.tsx`。
+- 学习地图和知识详情：`src/components/learning/*`、`app/learn/[nodeId]/page.tsx`。
+- AI 导师与训练场：`src/components/mentor/mentor-chat.tsx`、`src/components/training/training-arena.tsx`。
+- 观察池与公司研究：`app/watchlist/page.tsx`、`app/watchlist/[companyId]/page.tsx`。
+- 估值工具：`app/valuations/page.tsx`、`src/components/valuations/*`。
+- 投资系统、复盘、设置：`app/system/page.tsx`、`app/reviews/*`、`app/settings/page.tsx`。
+
+验证记录：
+
+- `npm run typecheck` 通过。
+- `npm run build` 通过。
+- 本地开发服务可访问 `http://localhost:3000`。

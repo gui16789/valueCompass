@@ -38,13 +38,13 @@ export default async function ReviewsPage({ searchParams }: ReviewsPageProps) {
 
   return (
     <main className="space-y-8">
-      <section className="rounded-lg border border-border bg-card p-6">
+      <section className="hero-panel rounded-lg p-6">
         <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
           <SectionHeader
             title="复盘"
             description="把每次判断放回事实里验证：哪些假设成立，哪些失败，哪些原则需要收紧。AI 只帮助总结和追问，不替你判定对错。"
           />
-          <div className="grid grid-cols-3 gap-2 rounded-lg border border-border bg-background p-3 text-center">
+          <div className="grid grid-cols-3 gap-2 rounded-lg border border-border bg-card/80 p-3 text-center">
             <Metric label="决策" value={data.decisions.length} />
             <Metric label="复盘" value={data.reviews.length} />
             <Metric label="待复盘" value={data.pendingDecisions.length} />
@@ -72,7 +72,7 @@ function PendingReviewDecisions({
   decisions: Array<{ decision: Decision; company: Company | null }>;
 }) {
   return (
-    <section className="rounded-lg border border-border bg-card p-6">
+    <section className="page-panel rounded-lg p-6">
       <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
         <div className="flex items-center gap-2">
           <CalendarClock className="h-5 w-5 text-primary" aria-hidden />
@@ -100,7 +100,7 @@ function PendingReviewDecisions({
                     {decision.decisionDate} / {checklistLabelFor(checklistTypes, decision.decisionType)}
                   </p>
                 </div>
-                <span className="rounded-full border border-border bg-card px-3 py-1 text-xs font-semibold text-muted-foreground">
+                <span className="status-chip status-chip-warn">
                   未复盘
                 </span>
               </div>
@@ -137,7 +137,7 @@ function ReviewForm({
   selectedDecisionId?: string;
 }) {
   return (
-    <section id="review-form" className="rounded-lg border border-border bg-card p-6">
+    <section id="review-form" className="page-panel rounded-lg p-6">
       <div className="flex items-center gap-2">
         <RotateCcw className="h-5 w-5 text-primary" aria-hidden />
         <h2 className="text-xl font-semibold">创建复盘</h2>
@@ -204,7 +204,7 @@ function RecentReviews({
   reviews: Array<{ review: Review; decision: Decision | null; company: Company | null }>;
 }) {
   return (
-    <section className="rounded-lg border border-border bg-card p-6">
+    <section className="page-panel rounded-lg p-6">
       <div className="flex items-center gap-2">
         <History className="h-5 w-5 text-primary" aria-hidden />
         <h2 className="text-xl font-semibold">最近复盘</h2>
@@ -245,7 +245,7 @@ function ReviewCard({
             {company ? `${company.stockName}（${company.stockCode}）` : "未关联公司"} / {review.reviewDate}
           </p>
         </div>
-        <span className="rounded-full border border-border bg-card px-3 py-1 text-xs font-semibold text-muted-foreground">
+        <span className="status-chip">
           复盘记录
         </span>
       </div>
@@ -355,7 +355,7 @@ function InfoBlock({ title, value }: { title: string; value: string }) {
 
 function Metric({ label, value }: { label: string; value: number }) {
   return (
-    <div className="min-w-20 rounded-md bg-card px-4 py-3">
+    <div className="metric-card">
       <div className="text-xl font-semibold">{value}</div>
       <div className="mt-1 text-xs text-muted-foreground">{label}</div>
     </div>

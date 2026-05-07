@@ -87,7 +87,7 @@ export function ResearchExtractionPanel({
   }
 
   return (
-    <section className="rounded-lg border border-border bg-card p-5">
+    <section className="page-panel rounded-lg p-5">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div>
           <div className="flex items-center gap-2">
@@ -98,7 +98,7 @@ export function ResearchExtractionPanel({
             粘贴年报、公告、新闻、研报摘要或你的笔记，让 AI 生成待确认草稿。资料会发送给你配置的模型提供商；AI 不会自动覆盖记录。
           </p>
         </div>
-        <div className="rounded-md border border-border bg-background px-3 py-2 text-xs leading-5 text-muted-foreground">
+        <div className="status-chip status-chip-warn rounded-md">
           事实 / 推断 / 观点 / 待确认分开展示
         </div>
       </div>
