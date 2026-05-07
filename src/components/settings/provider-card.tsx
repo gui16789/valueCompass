@@ -68,7 +68,7 @@ export function ProviderCard({ provider }: ProviderCardProps) {
   }
 
   return (
-    <div className="rounded-lg border border-border bg-background p-5">
+    <div className="rounded-lg border border-border bg-background p-5 shadow-sm">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div>
           <div className="flex flex-wrap items-center gap-3">
@@ -284,7 +284,7 @@ function StatusPill({ status }: { status: string }) {
           : "未测试";
 
   return (
-    <span className="rounded-full border border-border bg-muted px-3 py-1 text-xs text-muted-foreground">
+    <span className={status === "success" ? "status-chip status-chip-primary" : status === "failed" ? "status-chip status-chip-warn" : "status-chip"}>
       {text}
     </span>
   );

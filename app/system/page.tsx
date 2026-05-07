@@ -47,13 +47,13 @@ export default async function SystemPage({ searchParams }: SystemPageProps) {
 
   return (
     <main className="space-y-8">
-      <section className="rounded-lg border border-border bg-card p-6">
+      <section className="hero-panel rounded-lg p-6">
         <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
           <SectionHeader
             title="投资系统"
             description="把你的原则、清单和最终判断固定成流程：先检查，再记录，最后复盘。AI 只负责追问和反驳，不替你做买卖结论。"
           />
-          <div className="grid grid-cols-3 gap-2 rounded-lg border border-border bg-background p-3 text-center">
+          <div className="grid grid-cols-3 gap-2 rounded-lg border border-border bg-card/80 p-3 text-center">
             <Metric label="原则" value={data.principle ? 1 : 0} />
             <Metric label="版本" value={data.principleHistory.length} />
             <Metric label="检查" value={data.recentRuns.length} />
@@ -103,7 +103,7 @@ function PrinciplePanel({ principle }: { principle?: Principle }) {
   const auditDraft = `请作为投资委员会反方委员，检查我的 A 股价值投资原则是否足够清晰、可执行、可反证。不要替我制定最终原则，也不要给买卖建议。我的原则如下：能力圈=${principle?.circleOfCompetence || "未填写"}；不碰行业=${principle?.excludedIndustries || "未填写"}；财务质量=${principle?.minimumFinancialQuality || "未填写"}；安全边际=${principle?.minimumMarginOfSafety || "未填写"}；买入规则=${principle?.buyRules || "未填写"}；卖出规则=${principle?.sellRules || "未填写"}；不操作规则=${principle?.doNothingRules || "未填写"}。`;
 
   return (
-    <section className="rounded-lg border border-border bg-card p-6">
+    <section className="page-panel rounded-lg p-6">
       <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
         <div className="flex items-center gap-2">
           <FilePenLine className="h-5 w-5 text-primary" aria-hidden />
@@ -155,7 +155,7 @@ function PrincipleVersionPanel({ versions }: { versions: Principle[] }) {
 
   return (
     <section className="grid gap-6 xl:grid-cols-[0.95fr_1.05fr]">
-      <div className="rounded-lg border border-border bg-card p-6">
+      <div className="page-panel rounded-lg p-6">
         <div className="flex items-center gap-2">
           <History className="h-5 w-5 text-primary" aria-hidden />
           <h2 className="text-xl font-semibold">原则版本历史</h2>
@@ -179,7 +179,7 @@ function PrincipleVersionPanel({ versions }: { versions: Principle[] }) {
                       创建 {version.createdAt.slice(0, 10)} / 更新 {version.updatedAt.slice(0, 10)}
                     </p>
                   </div>
-                  <span className="rounded-full border border-border bg-card px-3 py-1 text-xs font-semibold text-muted-foreground">
+                  <span className="status-chip">
                     {version.active ? "当前版本" : "历史版本"}
                   </span>
                 </div>
@@ -192,7 +192,7 @@ function PrincipleVersionPanel({ versions }: { versions: Principle[] }) {
         </div>
       </div>
 
-      <div className="rounded-lg border border-border bg-card p-6">
+      <div className="page-panel rounded-lg p-6">
         <h2 className="text-xl font-semibold">与上一版变化</h2>
         {!current ? (
           <EmptyState text="保存第一版原则后，这里会展示后续版本变化。" />
@@ -231,7 +231,7 @@ function ChecklistPanel({
   templates: Record<ChecklistType, EffectiveChecklistTemplate>;
 }) {
   return (
-    <section className="rounded-lg border border-border bg-card p-6">
+    <section className="page-panel rounded-lg p-6">
       <div className="flex items-center gap-2">
         <ClipboardCheck className="h-5 w-5 text-primary" aria-hidden />
         <h2 className="text-xl font-semibold">决策检查清单</h2>
@@ -326,13 +326,13 @@ function ChecklistItem({ item }: { item: ChecklistTemplateItem }) {
         <div>
           <div className="flex flex-wrap items-center gap-2 text-xs font-semibold text-primary">
             <span>{item.category}</span>
-            {item.required ? <span className="rounded-full bg-muted px-2 py-0.5 text-muted-foreground">关键项</span> : null}
+            {item.required ? <span className="status-chip status-chip-warn px-2 py-0.5">关键项</span> : null}
           </div>
           <p className="mt-2 text-sm leading-6">{item.text}</p>
         </div>
         <div className="flex flex-wrap gap-2 text-xs">
           {checklistStatuses.map((status) => (
-            <label key={status.value} className="inline-flex items-center gap-1 rounded-full border border-border bg-background px-2 py-1">
+            <label key={status.value} className="inline-flex items-center gap-1 rounded-full border border-border bg-background px-2 py-1 transition hover:bg-muted">
               <input
                 type="radio"
                 name={`status.${item.id}`}
@@ -361,7 +361,7 @@ function RecentRuns({
   principle?: Principle;
 }) {
   return (
-    <section className="rounded-lg border border-border bg-card p-6">
+    <section className="page-panel rounded-lg p-6">
       <div className="flex items-center gap-2">
         <History className="h-5 w-5 text-primary" aria-hidden />
         <h2 className="text-xl font-semibold">最近检查</h2>
@@ -393,7 +393,7 @@ function RunCard({ run, company, principle }: { run: Run; company: Company | nul
             {company ? `${company.stockName}（${company.stockCode}）` : "未关联公司"} / {run.createdAt.slice(0, 10)}
           </p>
         </div>
-        <span className="rounded-full border border-border bg-card px-3 py-1 text-xs font-semibold text-muted-foreground">
+        <span className="status-chip status-chip-warn">
           关键问题 {issueCount} 项
         </span>
       </div>
@@ -401,7 +401,7 @@ function RunCard({ run, company, principle }: { run: Run; company: Company | nul
       <p className="mt-2 text-sm leading-6 text-muted-foreground">最终判断：{run.finalJudgment}</p>
       <div className="mt-3 flex flex-wrap gap-2">
         {items.slice(0, 4).map((item) => (
-          <span key={item.id} className="rounded-full border border-border bg-card px-2 py-1 text-xs text-muted-foreground">
+          <span key={item.id} className="status-chip">
             {item.category}：{labelFor(checklistStatuses, item.status)}
           </span>
         ))}
@@ -419,7 +419,7 @@ function RunCard({ run, company, principle }: { run: Run; company: Company | nul
 
 function DecisionLog({ decisions }: { decisions: Array<{ decision: Decision; company: Company | null }> }) {
   return (
-    <section className="rounded-lg border border-border bg-card p-6">
+    <section className="page-panel rounded-lg p-6">
       <div className="flex items-center gap-2">
         <ClipboardCheck className="h-5 w-5 text-primary" aria-hidden />
         <h2 className="text-xl font-semibold">决策日志</h2>
@@ -437,7 +437,7 @@ function DecisionLog({ decisions }: { decisions: Array<{ decision: Decision; com
                     {company ? `${company.stockName}（${company.stockCode}）` : "未关联公司"} / {decision.decisionDate}
                   </p>
                 </div>
-                <span className="rounded-full border border-border bg-card px-3 py-1 text-xs font-semibold text-muted-foreground">
+                <span className="status-chip">
                   用户填写
                 </span>
               </div>
@@ -533,7 +533,7 @@ function InfoBlock({ title, value }: { title: string; value: string }) {
 
 function Metric({ label, value }: { label: string; value: number }) {
   return (
-    <div className="min-w-20 rounded-md bg-card px-4 py-3">
+    <div className="metric-card">
       <div className="text-xl font-semibold">{value}</div>
       <div className="mt-1 text-xs text-muted-foreground">{label}</div>
     </div>

@@ -132,7 +132,7 @@ export function MarketSnapshotLookup({ companies }: { companies: Company[] }) {
   }
 
   return (
-    <div className="rounded-lg border border-border bg-card p-4">
+    <div className="rounded-lg border border-border bg-card p-4 shadow-sm">
       <div className="flex flex-col gap-3 lg:flex-row lg:items-end">
         <label className="block flex-1">
           <span className="text-sm font-semibold">行情取数助手</span>

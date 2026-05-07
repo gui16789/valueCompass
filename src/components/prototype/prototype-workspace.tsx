@@ -54,7 +54,7 @@ const valuationRows = [
 export function PrototypeWorkspace() {
   return (
     <main className="space-y-8">
-      <section className="flex flex-col gap-4 rounded-lg border border-border bg-card p-6 lg:flex-row lg:items-center lg:justify-between">
+      <section className="hero-panel flex flex-col gap-4 rounded-lg p-6 lg:flex-row lg:items-center lg:justify-between">
         <div>
           <p className="text-sm font-semibold text-primary">低保真浏览器原型</p>
           <h1 className="mt-2 text-3xl font-semibold tracking-normal">价值投资工作台</h1>
@@ -72,7 +72,7 @@ export function PrototypeWorkspace() {
         {metrics.map((metric) => {
           const Icon = metric.icon;
           return (
-            <div key={metric.label} className="rounded-lg border border-border bg-card p-5">
+            <div key={metric.label} className="metric-card">
               <div className="flex items-center justify-between">
                 <Icon className="h-5 w-5 text-primary" aria-hidden />
                 <span className="text-xs text-muted-foreground">{metric.label}</span>
@@ -85,7 +85,7 @@ export function PrototypeWorkspace() {
       </section>
 
       <section className="grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
-        <div className="rounded-lg border border-border bg-card p-6">
+        <div className="page-panel rounded-lg p-6">
           <SectionHeader title="学习地图" description="时间线和学派地图负责组织经典体系。" />
           <div className="mt-6 flex gap-3 overflow-x-auto pb-2">
             {timelineNodes.map((node, index) => (
@@ -100,7 +100,7 @@ export function PrototypeWorkspace() {
           </div>
         </div>
 
-        <div className="rounded-lg border border-border bg-card p-6">
+        <div className="page-panel rounded-lg p-6">
           <SectionHeader title="AI 导师" description="角色明确，避免普通聊天框化。" />
           <div className="mt-5 grid gap-3">
             <RoleRow icon={Bot} title="耐心导师" detail="解释概念、原著和估值参数" />
@@ -111,7 +111,7 @@ export function PrototypeWorkspace() {
       </section>
 
       <section className="grid gap-6 xl:grid-cols-[1fr_0.9fr]">
-        <div className="rounded-lg border border-border bg-card p-6">
+        <div className="page-panel rounded-lg p-6">
           <SectionHeader title="A 股观察池" description="以研究状态和下一步行动组织公司。" />
           <div className="mt-5 overflow-hidden rounded-lg border border-border">
             <table className="w-full border-collapse text-left text-sm">
@@ -139,7 +139,7 @@ export function PrototypeWorkspace() {
           </div>
         </div>
 
-        <div className="rounded-lg border border-border bg-card p-6">
+        <div className="page-panel rounded-lg p-6">
           <SectionHeader title="下一步待办" description="系统推动流程，但不替用户决策。" />
           <div className="mt-5 space-y-3">
             {todos.map((todo) => (
@@ -153,7 +153,7 @@ export function PrototypeWorkspace() {
       </section>
 
       <section className="grid gap-6 xl:grid-cols-[0.95fr_1.05fr]">
-        <div className="rounded-lg border border-border bg-card p-6">
+        <div className="page-panel rounded-lg p-6">
           <SectionHeader title="估值模板" description="简化模式默认展示，高级字段折叠。" />
           <div className="mt-5 grid gap-3">
             {valuationRows.map(([type, model, fields]) => (
@@ -169,7 +169,7 @@ export function PrototypeWorkspace() {
           </div>
         </div>
 
-        <div className="rounded-lg border border-border bg-card p-6">
+        <div className="page-panel rounded-lg p-6">
           <SectionHeader title="决策检查" description="买入、卖出、不操作必须同等重要。" />
           <div className="mt-5 grid gap-4 md:grid-cols-3">
             <DecisionCard title="买入检查" detail="好公司、好价格、安全边际、反面证据" />

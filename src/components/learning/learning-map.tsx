@@ -42,7 +42,7 @@ export function LearningMap({ nodes, progressByNodeId }: LearningMapProps) {
 
   return (
     <div className="space-y-8">
-      <section className="rounded-lg border border-border bg-card p-6">
+      <section className="hero-panel rounded-lg p-6">
         <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
           <div>
             <p className="text-sm font-semibold text-primary">价值投资学习地图</p>
@@ -53,7 +53,7 @@ export function LearningMap({ nodes, progressByNodeId }: LearningMapProps) {
               第一批 {nodes.length} 个知识节点覆盖发展史、代表人物、经典书籍、核心概念和 A 股本土案例。
             </p>
           </div>
-          <div className="grid grid-cols-3 gap-2 rounded-lg border border-border bg-background p-3 text-center">
+          <div className="grid grid-cols-3 gap-2 rounded-lg border border-border bg-card/80 p-3 text-center">
             <Metric label="节点" value={nodes.length} />
             <Metric label="已学" value={learnedCount} />
             <Metric label="学习中" value={inProgressCount} />
@@ -61,7 +61,7 @@ export function LearningMap({ nodes, progressByNodeId }: LearningMapProps) {
         </div>
       </section>
 
-      <section className="rounded-lg border border-border bg-card p-6">
+      <section className="page-panel rounded-lg p-6">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex items-center gap-2">
             <Building2 className="h-5 w-5 text-primary" aria-hidden />
@@ -94,7 +94,7 @@ export function LearningMap({ nodes, progressByNodeId }: LearningMapProps) {
                   {caseStudy?.caseTheme ?? node.summary}
                 </p>
                 {caseStudy ? (
-                  <div className="mt-4 rounded-md border border-border bg-card px-2 py-1 text-xs text-muted-foreground">
+                  <div className="mt-4 rounded-md border border-border bg-card px-2 py-1 text-xs font-semibold text-muted-foreground">
                     {caseStudy.valuationTemplate}
                   </div>
                 ) : null}
@@ -104,7 +104,7 @@ export function LearningMap({ nodes, progressByNodeId }: LearningMapProps) {
         </div>
       </section>
 
-      <section className="rounded-lg border border-border bg-card p-6">
+      <section className="page-panel rounded-lg p-6">
         <div className="flex items-center gap-2">
           <Milestone className="h-5 w-5 text-primary" aria-hidden />
           <h2 className="text-xl font-semibold">价值投资时间线</h2>
@@ -121,8 +121,11 @@ export function LearningMap({ nodes, progressByNodeId }: LearningMapProps) {
               <Link
                 key={node.id}
                 href={`/learn/${node.id}`}
-                className="group rounded-lg border border-border bg-background p-4 transition hover:border-primary hover:bg-muted"
+                className="group relative rounded-lg border border-border bg-background p-4 transition hover:border-primary hover:bg-muted"
               >
+                {index < timelineNodes.length - 1 ? (
+                  <span className="absolute right-[-0.85rem] top-8 hidden h-px w-4 bg-border xl:block" aria-hidden />
+                ) : null}
                 <div className="text-xs font-semibold text-muted-foreground">{node.period}</div>
                 <div className="mt-3 min-h-12 text-sm font-semibold leading-6">{node.title}</div>
                 <StatusBadge status={getNodeStatus(progressByNodeId[node.id])} />
@@ -140,7 +143,7 @@ export function LearningMap({ nodes, progressByNodeId }: LearningMapProps) {
         </div>
       </section>
 
-      <section className="rounded-lg border border-border bg-card p-6">
+      <section className="page-panel rounded-lg p-6">
         <div className="flex items-center gap-2">
           <Map className="h-5 w-5 text-primary" aria-hidden />
           <h2 className="text-xl font-semibold">学派地图</h2>
@@ -161,7 +164,7 @@ export function LearningMap({ nodes, progressByNodeId }: LearningMapProps) {
         </div>
       </section>
 
-      <section className="rounded-lg border border-border bg-card p-6">
+      <section className="page-panel rounded-lg p-6">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex items-center gap-2">
             <BookOpen className="h-5 w-5 text-primary" aria-hidden />
@@ -175,7 +178,7 @@ export function LearningMap({ nodes, progressByNodeId }: LearningMapProps) {
                 onClick={() => setActiveType(filter.value)}
                 className={`rounded-md border px-3 py-2 text-sm font-semibold transition ${
                   activeType === filter.value
-                    ? "border-primary bg-muted"
+                    ? "border-primary bg-muted text-primary"
                     : "border-border bg-background hover:bg-muted"
                 }`}
               >
@@ -217,7 +220,7 @@ function KnowledgeCard({ node, status }: { node: KnowledgeNode; status: Learning
       <StatusBadge status={status} />
       <div className="mt-4 flex flex-wrap gap-2">
         {node.coreIdeas.slice(0, 3).map((idea) => (
-          <span key={idea} className="rounded-md border border-border bg-card px-2 py-1 text-xs text-muted-foreground">
+          <span key={idea} className="status-chip">
             {idea}
           </span>
         ))}
@@ -240,7 +243,7 @@ function StatusBadge({ status }: { status: LearningStatus }) {
 
   return (
     <span
-      className={`mt-3 inline-flex rounded-md border px-2 py-1 text-xs font-semibold ${
+      className={`mt-3 inline-flex rounded-full border px-2.5 py-1 text-xs font-semibold ${
         completed
           ? "border-primary bg-muted text-primary"
           : inProgress
@@ -255,7 +258,7 @@ function StatusBadge({ status }: { status: LearningStatus }) {
 
 function Metric({ label, value }: { label: string; value: number }) {
   return (
-    <div className="min-w-20 rounded-md bg-card px-4 py-3">
+    <div className="metric-card">
       <div className="text-xl font-semibold">{value}</div>
       <div className="mt-1 text-xs text-muted-foreground">{label}</div>
     </div>

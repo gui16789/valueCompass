@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { BrainCircuit } from "lucide-react";
+import { BrainCircuit, CircleDot } from "lucide-react";
 
 const navItems = [
   { href: "/", label: "学习地图" },
@@ -14,21 +14,27 @@ const navItems = [
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen">
-      <header className="border-b border-border bg-card">
-        <div className="mx-auto flex max-w-7xl flex-col gap-4 px-6 py-4 lg:flex-row lg:items-center lg:justify-between">
+    <div className="app-frame">
+      <header className="shell-header">
+        <div className="mx-auto flex max-w-7xl flex-col gap-4 px-5 py-4 lg:flex-row lg:items-center lg:justify-between">
           <Link href="/" className="flex items-center gap-3 font-semibold">
-            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+            <span className="brand-mark">
               <BrainCircuit className="h-5 w-5" aria-hidden />
             </span>
-            <span>长投罗盘</span>
+            <span>
+              <span className="block text-base leading-5">长投罗盘</span>
+              <span className="mt-0.5 flex items-center gap-1 text-xs font-normal text-muted-foreground">
+                <CircleDot className="h-3 w-3 text-primary" aria-hidden />
+                A 股价值投资工作台
+              </span>
+            </span>
           </Link>
           <nav className="flex flex-wrap gap-2 text-sm text-muted-foreground">
             {navItems.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
-                className="rounded-md px-3 py-2 transition hover:bg-muted hover:text-foreground"
+                className="nav-link"
               >
                 {item.label}
               </Link>
@@ -36,7 +42,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </nav>
         </div>
       </header>
-      <div className="mx-auto max-w-7xl px-6 py-8">{children}</div>
+      <div className="mx-auto max-w-7xl px-5 py-8">{children}</div>
     </div>
   );
 }

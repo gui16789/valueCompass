@@ -25,7 +25,7 @@ export default async function MentorPage({ searchParams }: MentorPageProps) {
 
   return (
     <main className="space-y-6">
-      <section className="rounded-lg border border-border bg-card p-6">
+      <section className="hero-panel rounded-lg p-6">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <SectionHeader
             title="AI 投研教练"
@@ -41,7 +41,7 @@ export default async function MentorPage({ searchParams }: MentorPageProps) {
       </section>
 
       {!hasProvider ? (
-        <section className="rounded-lg border border-border bg-card p-6">
+        <section className="page-panel rounded-lg p-6">
           <h2 className="text-lg font-semibold">先连接你的模型</h2>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
             AI 对话不会内置模型。请先在设置页添加 OpenAI API 兼容提供商，测试成功后再回来使用导师、反方委员、考官和研究助理。

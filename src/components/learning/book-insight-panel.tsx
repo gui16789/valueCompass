@@ -7,7 +7,7 @@ type BookInsightPanelProps = {
 
 export function BookInsightPanel({ insight }: BookInsightPanelProps) {
   return (
-    <div className="rounded-lg border border-border bg-card p-5">
+    <div className="page-panel rounded-lg p-5">
       <h2 className="font-semibold">全书主干</h2>
       <p className="mt-2 text-sm leading-6 text-muted-foreground">{insight.readingFocus}</p>
 

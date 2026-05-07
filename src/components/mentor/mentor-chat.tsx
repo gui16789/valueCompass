@@ -116,8 +116,8 @@ export function MentorChat({
   }
 
   return (
-    <div className="grid gap-6 xl:grid-cols-[280px_1fr]">
-      <aside className="rounded-lg border border-border bg-card p-4">
+    <div className="grid gap-6 xl:grid-cols-[300px_1fr]">
+      <aside className="page-panel rounded-lg p-4">
         <button
           type="button"
           onClick={() => startNewConversation()}
@@ -154,8 +154,8 @@ export function MentorChat({
         </div>
       </aside>
 
-      <section className="min-h-[640px] rounded-lg border border-border bg-card">
-        <div className="border-b border-border p-5">
+      <section className="page-panel min-h-[640px] overflow-hidden rounded-lg">
+        <div className="border-b border-border bg-card/70 p-5">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div>
               <div className="flex items-center gap-2">
@@ -174,8 +174,8 @@ export function MentorChat({
                   onClick={() => startNewConversation(role.value)}
                   className={`rounded-md border px-3 py-2 text-sm font-semibold transition ${
                     activeRole === role.value
-                      ? "border-primary bg-muted"
-                      : "border-border bg-background hover:bg-muted"
+                    ? "border-primary bg-muted text-primary"
+                    : "border-border bg-background hover:bg-muted"
                   }`}
                 >
                   {role.label}
@@ -195,9 +195,9 @@ export function MentorChat({
             </div>
           </div>
 
-          <div className="min-h-[360px] space-y-4">
+          <div className="min-h-[360px] space-y-4 rounded-lg border border-border bg-background/65 p-4">
             {messages.length === 0 ? (
-              <div className="rounded-lg border border-dashed border-border bg-background p-8 text-center">
+              <div className="rounded-lg border border-dashed border-border bg-card p-8 text-center">
                 <p className="text-sm font-semibold">从一个具体问题开始</p>
                 <p className="mt-2 text-sm leading-6 text-muted-foreground">
                   例如：安全边际为什么不是简单打折？或者请反方委员质疑我的估值假设。
@@ -207,7 +207,7 @@ export function MentorChat({
               messages.map((message) => <ChatBubble key={message.id} message={message} />)
             )}
             {isSending ? (
-              <div className="rounded-lg border border-border bg-background p-4 text-sm text-muted-foreground">
+              <div className="rounded-lg border border-border bg-card p-4 text-sm text-muted-foreground">
                 {activeRoleMeta.label}正在思考...
               </div>
             ) : null}
@@ -219,7 +219,7 @@ export function MentorChat({
             </div>
           ) : null}
 
-          <div className="rounded-lg border border-border bg-background p-3">
+          <div className="rounded-lg border border-border bg-card p-3 shadow-sm">
             <textarea
               value={input}
               onChange={(event) => setInput(event.target.value)}
@@ -259,14 +259,14 @@ function ChatBubble({ message }: { message: ConversationMessage }) {
   return (
     <div className={`flex gap-3 ${isUser ? "justify-end" : "justify-start"}`}>
       {!isUser ? (
-        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-primary text-primary-foreground">
+        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-primary text-primary-foreground shadow-sm">
           <Bot className="h-4 w-4" aria-hidden />
         </span>
       ) : null}
       <div
         className={`max-w-3xl rounded-lg border px-4 py-3 text-sm leading-6 ${
           isUser
-            ? "border-primary bg-primary text-primary-foreground"
+            ? "border-primary bg-primary text-primary-foreground shadow-sm"
             : "border-border bg-background text-foreground"
         }`}
       >

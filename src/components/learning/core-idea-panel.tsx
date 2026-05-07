@@ -14,7 +14,7 @@ export function CoreIdeaPanel({ node }: CoreIdeaPanelProps) {
   const [openIdea, setOpenIdea] = useState(node.coreIdeas[0] ?? "");
 
   return (
-    <div className="rounded-lg border border-border bg-card p-5">
+    <div className="page-panel rounded-lg p-5">
       <h2 className="font-semibold">核心观点</h2>
       <p className="mt-2 text-sm leading-6 text-muted-foreground">
         点击每个观点查看具体解释和通俗案例，再决定是否继续问 AI 导师。

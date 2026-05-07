@@ -43,13 +43,13 @@ export default async function ValuationsPage({ searchParams }: ValuationsPagePro
 
   return (
     <main className="space-y-8">
-      <section className="rounded-lg border border-border bg-card p-6">
+      <section className="hero-panel rounded-lg p-6">
         <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
           <SectionHeader
             title="估值工具"
             description="用四类 A 股模板完成三情景估值：只输出区间、假设、安全边际和风险提醒，不输出买入或卖出建议。"
           />
-          <div className="grid grid-cols-3 gap-2 rounded-lg border border-border bg-background p-3 text-center">
+          <div className="grid grid-cols-3 gap-2 rounded-lg border border-border bg-card/80 p-3 text-center">
             <Metric label="模板" value={valuationTemplates.length} />
             <Metric label="公司" value={data.companies.length} />
             <Metric label="估值" value={data.valuations.length} />
@@ -66,7 +66,7 @@ export default async function ValuationsPage({ searchParams }: ValuationsPagePro
       <AiValuationDraftPanel companies={data.companies} saveAction={saveValuation} />
 
       <section className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
-        <section className="rounded-lg border border-border bg-card p-6">
+        <section className="page-panel rounded-lg p-6">
           <div className="flex items-center gap-2">
             <Calculator className="h-5 w-5 text-primary" aria-hidden />
             <h2 className="text-xl font-semibold">创建估值</h2>
@@ -101,7 +101,7 @@ function ValuationForm({
   const template = getTemplate(templateType);
 
   return (
-    <details className="rounded-lg border border-border bg-background p-4" open={templateType === "financial"}>
+    <details className="rounded-lg border border-border bg-background p-4 open:bg-card" open={templateType === "financial"}>
       <summary className="cursor-pointer text-sm font-semibold">
         {template.label} <span className="text-muted-foreground">/ {template.method}</span>
       </summary>
@@ -167,7 +167,7 @@ function TemplateSelectionGuide() {
       />
       <div className="grid gap-4 lg:grid-cols-4">
         {valuationTemplates.map((template) => (
-          <article key={template.value} className="rounded-lg border border-border bg-card p-4">
+          <article key={template.value} className="rounded-lg border border-border bg-card p-4 transition hover:border-primary hover:bg-muted">
             <div className="text-sm font-semibold">{template.label}</div>
             <p className="mt-1 text-xs text-primary">{template.method}</p>
             <InfoLine title="适合" value={template.fitFor} />
@@ -176,7 +176,7 @@ function TemplateSelectionGuide() {
           </article>
         ))}
       </div>
-      <div className="rounded-lg border border-border bg-card p-4 text-sm leading-6">
+      <div className="page-panel rounded-lg p-4 text-sm leading-6">
         <span className="font-semibold">美的集团这类成熟消费制造公司：</span>
         优先用制造业模板看自由现金流、资本开支和营运资本，再用消费股模板用利润增长和 PE 做交叉验证。
       </div>
@@ -263,7 +263,7 @@ function RecentValuations({
   valuations: Array<{ valuation: Valuation; company: Company | null }>;
 }) {
   return (
-    <section className="rounded-lg border border-border bg-card p-6">
+    <section className="page-panel rounded-lg p-6">
       <div className="flex items-center gap-2">
         <Sigma className="h-5 w-5 text-primary" aria-hidden />
         <h2 className="text-xl font-semibold">最近估值</h2>
@@ -320,7 +320,7 @@ function ValuationCard({ valuation, company }: { valuation: Valuation; company: 
             {company ? `${company.stockName}（${company.stockCode}）` : "未关联公司"} / {labelFor(valuationTemplates, valuation.templateType)} / {valuation.valuationDate}
           </p>
         </div>
-        <span className="rounded-full border border-border bg-card px-3 py-1 text-xs font-semibold text-muted-foreground">
+        <span className="status-chip status-chip-warn">
           {template.method}
         </span>
       </div>
@@ -461,7 +461,7 @@ function InfoBlock({ title, value }: { title: string; value: string }) {
 
 function Metric({ label, value }: { label: string; value: number }) {
   return (
-    <div className="min-w-20 rounded-md bg-card px-4 py-3">
+    <div className="metric-card">
       <div className="text-xl font-semibold">{value}</div>
       <div className="mt-1 text-xs text-muted-foreground">{label}</div>
     </div>

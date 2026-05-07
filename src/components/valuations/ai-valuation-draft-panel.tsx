@@ -134,7 +134,7 @@ export function AiValuationDraftPanel({
   }
 
   return (
-    <section className="rounded-lg border border-border bg-card p-6">
+    <section className="page-panel rounded-lg p-6">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div>
           <div className="flex items-center gap-2">
@@ -145,7 +145,7 @@ export function AiValuationDraftPanel({
             选择公司后，系统会尝试读取行情快照和基础财务摘要，再生成三情景参数草稿。你也可以粘贴年报片段或研究笔记作为补充，最终数字必须由你确认。
           </p>
         </div>
-        <div className="rounded-md border border-border bg-background px-3 py-2 text-xs leading-5 text-muted-foreground">
+        <div className="status-chip status-chip-warn rounded-md">
           快照辅助填充，假设人工确认
         </div>
       </div>
@@ -302,7 +302,7 @@ function EditableSummary({
           </p>
         </div>
         {draft.cautions.length > 0 ? (
-          <span className="rounded-full border border-border bg-card px-3 py-1 text-xs font-semibold text-muted-foreground">
+          <span className="status-chip status-chip-warn">
             待确认 {draft.cautions.length} 项
           </span>
         ) : null}

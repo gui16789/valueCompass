@@ -68,7 +68,7 @@ export default async function CompanyResearchPage({ params }: CompanyResearchPag
         返回观察池
       </Link>
 
-      <section className="rounded-lg border border-border bg-card p-6">
+      <section className="hero-panel rounded-lg p-6">
         <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
           <div>
             <div className="flex flex-wrap items-center gap-2 text-sm font-semibold text-primary">
@@ -111,7 +111,7 @@ export default async function CompanyResearchPage({ params }: CompanyResearchPag
 
 function ResearchOverview({ company }: { company: Company }) {
   return (
-    <section className="rounded-lg border border-border bg-card p-5">
+    <section className="page-panel rounded-lg p-5">
       <div className="flex items-center gap-2">
         <ClipboardCheck className="h-5 w-5 text-primary" aria-hidden />
         <h2 className="text-xl font-semibold">研究摘要</h2>
@@ -127,7 +127,7 @@ function ResearchOverview({ company }: { company: Company }) {
 
 function ResearchSourcesPanel({ company, sources }: { company: Company; sources: Source[] }) {
   return (
-    <section className="rounded-lg border border-border bg-card p-5">
+    <section className="page-panel rounded-lg p-5">
       <div className="flex items-center gap-2">
         <FileText className="h-5 w-5 text-primary" aria-hidden />
         <h2 className="text-xl font-semibold">资料来源</h2>
@@ -192,7 +192,7 @@ function ResearchSourcesPanel({ company, sources }: { company: Company; sources:
 
 function ValuationHistory({ valuations }: { valuations: Valuation[] }) {
   return (
-    <section className="rounded-lg border border-border bg-card p-5">
+    <section className="page-panel rounded-lg p-5">
       <h2 className="text-xl font-semibold">估值记录</h2>
       {valuations.length === 0 ? (
         <p className="mt-3 text-sm leading-6 text-muted-foreground">还没有估值记录。可以从右侧进入估值工具创建三情景估值。</p>
@@ -230,7 +230,7 @@ function ValuationHistory({ valuations }: { valuations: Valuation[] }) {
 function DecisionHistory({ checklistRuns, decisions }: { checklistRuns: ChecklistRun[]; decisions: Decision[] }) {
   return (
     <section className="grid gap-6 xl:grid-cols-2">
-      <div className="rounded-lg border border-border bg-card p-5">
+      <div className="page-panel rounded-lg p-5">
         <h2 className="text-xl font-semibold">检查记录</h2>
         <div className="mt-4 space-y-3">
           {checklistRuns.length === 0 ? (
@@ -245,7 +245,7 @@ function DecisionHistory({ checklistRuns, decisions }: { checklistRuns: Checklis
           )}
         </div>
       </div>
-      <div className="rounded-lg border border-border bg-card p-5">
+      <div className="page-panel rounded-lg p-5">
         <h2 className="text-xl font-semibold">决策记录</h2>
         <div className="mt-4 space-y-3">
           {decisions.length === 0 ? (
@@ -274,7 +274,7 @@ function ActionPanel({
   opponentDraft: string;
 }) {
   return (
-    <section className="rounded-lg border border-border bg-card p-5">
+    <section className="page-panel rounded-lg p-5">
       <h2 className="font-semibold">下一步</h2>
       <div className="mt-3 grid gap-2">
         <Link
@@ -310,7 +310,7 @@ function ActionPanel({
 
 function EditCompanyPanel({ company }: { company: Company }) {
   return (
-    <details className="rounded-lg border border-border bg-card p-5">
+    <details className="page-panel rounded-lg p-5">
       <summary className="cursor-pointer font-semibold">编辑研究档案</summary>
       <form action={updateCompany} className="mt-4 space-y-4">
         <input type="hidden" name="companyId" value={company.id} />
@@ -345,7 +345,7 @@ function EditCompanyPanel({ company }: { company: Company }) {
 
 function AddSourcePanel({ company }: { company: Company }) {
   return (
-    <details className="rounded-lg border border-border bg-card p-5" open>
+    <details className="page-panel rounded-lg p-5" open>
       <summary className="cursor-pointer font-semibold">新增资料来源</summary>
       <form action={addResearchSource} className="mt-4 space-y-4">
         <input type="hidden" name="companyId" value={company.id} />
@@ -504,7 +504,7 @@ function TextArea({
 
 function StatusPill({ label }: { label: string }) {
   return (
-    <span className="rounded-full border border-border bg-background px-3 py-1 text-xs font-semibold text-muted-foreground">
+    <span className="status-chip">
       {label}
     </span>
   );
