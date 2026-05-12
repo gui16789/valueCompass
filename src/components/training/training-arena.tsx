@@ -29,7 +29,8 @@ const filters: Array<{ value: "all" | TrainingQuestionType; label: string }> = [
   { value: "all", label: "全部" },
   { value: "concept", label: "概念题" },
   { value: "scenario", label: "场景题" },
-  { value: "case", label: "案例题" }
+  { value: "case", label: "案例题" },
+  { value: "counterintuitive", label: "反常识题" }
 ];
 
 export function TrainingArena({ questions, recentResults, onSaveResult }: TrainingArenaProps) {
